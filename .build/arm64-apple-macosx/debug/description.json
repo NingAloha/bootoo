@@ -1,0 +1,752 @@
+{
+  "builtTestProducts" : [
+    {
+      "binaryPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.xctest/Contents/MacOS/bootooPackageTests",
+      "packagePath" : "/Users/ningaloha/Documents/Repository/bootoo",
+      "productName" : "bootooPackageTests"
+    }
+  ],
+  "copyCommands" : {
+
+  },
+  "explicitTargetDependencyImportCheckingMode" : {
+    "none" : {
+
+    }
+  },
+  "generatedSourceTargetSet" : [
+
+  ],
+  "pluginDescriptions" : [
+
+  ],
+  "swiftCommands" : {
+    "C.BootooMacCore-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/sources",
+      "importPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/device_management/DeviceDiscovery.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/image_validation/ImageValidator.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/privileged_execution/PrivilegedExecutor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreLogger.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreModels.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/write_engine/WriteEngine.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "BootooMacCore",
+      "moduleOutputPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/BootooMacCore.swiftmodule",
+      "objects" : [
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/DeviceDiscovery.swift.o",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/ImageValidator.swift.o",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/PrivilegedExecutor.swift.o",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreError.swift.o",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreLogger.swift.o",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreModels.swift.o",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/WriteEngine.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/include/BootooMacCore-Swift.h",
+        "-swift-version",
+        "6",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "bootoo"
+      ],
+      "outputFileMapPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/DeviceDiscovery.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/ImageValidator.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/PrivilegedExecutor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreLogger.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreModels.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/WriteEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/BootooMacCore.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/device_management/DeviceDiscovery.swift",
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/image_validation/ImageValidator.swift",
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/privileged_execution/PrivilegedExecutor.swift",
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreError.swift",
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreLogger.swift",
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreModels.swift",
+        "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/write_engine/WriteEngine.swift"
+      ],
+      "tempsPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.BootooMacCoreTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/sources",
+      "importPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/tests/mac/apple_silicon/BootooMacCoreTests.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/BootooMacCore.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "BootooMacCoreTests",
+      "moduleOutputPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/BootooMacCoreTests.swiftmodule",
+      "objects" : [
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/BootooMacCoreTests.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx14.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-swift-version",
+        "6",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "bootoo"
+      ],
+      "outputFileMapPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/BootooMacCoreTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/BootooMacCoreTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/ningaloha/Documents/Repository/bootoo/tests/mac/apple_silicon/BootooMacCoreTests.swift"
+      ],
+      "tempsPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build",
+      "wholeModuleOptimization" : false
+    },
+    "C.bootooPackageTests-arm64-apple-macosx26.0-debug.module" : {
+      "executable" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "fileList" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/sources",
+      "importPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules",
+      "inputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.derived/runner.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/BootooMacCoreTests.swiftmodule"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/sources"
+        }
+      ],
+      "isLibrary" : true,
+      "moduleName" : "bootooPackageTests",
+      "moduleOutputPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/bootooPackageTests.swiftmodule",
+      "objects" : [
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/runner.swift.o"
+      ],
+      "otherArguments" : [
+        "-target",
+        "arm64-apple-macosx13.0",
+        "-incremental",
+        "-enable-batch-mode",
+        "-serialize-diagnostics",
+        "-index-store-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/index/store",
+        "-Onone",
+        "-enable-testing",
+        "-Xfrontend",
+        "-enable-cross-import-overlays",
+        "-j10",
+        "-DSWIFT_PACKAGE",
+        "-DDEBUG",
+        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+        "-module-cache-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/ModuleCache",
+        "-parseable-output",
+        "-parse-as-library",
+        "-emit-objc-header",
+        "-emit-objc-header-path",
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/include/bootooPackageTests-Swift.h",
+        "-plugin-path",
+        "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+        "-sdk",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-F",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-I",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-L",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+        "-g",
+        "-Xcc",
+        "-isysroot",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+        "-Xcc",
+        "-F",
+        "-Xcc",
+        "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+        "-Xcc",
+        "-fPIC",
+        "-Xcc",
+        "-g",
+        "-package-name",
+        "bootoo"
+      ],
+      "outputFileMapPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/output-file-map.json",
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/runner.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules/bootooPackageTests.swiftmodule"
+        }
+      ],
+      "prepareForIndexing" : false,
+      "sources" : [
+        "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.derived/runner.swift"
+      ],
+      "tempsPath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build",
+      "wholeModuleOptimization" : false
+    }
+  },
+  "swiftFrontendCommands" : {
+
+  },
+  "swiftTargetScanArgs" : {
+    "BootooMacCore" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "BootooMacCore",
+      "-package-name",
+      "bootoo",
+      "-c",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/device_management/DeviceDiscovery.swift",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/image_validation/ImageValidator.swift",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/privileged_execution/PrivilegedExecutor.swift",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreError.swift",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreLogger.swift",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreModels.swift",
+      "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/write_engine/WriteEngine.swift",
+      "-I",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/include/BootooMacCore-Swift.h",
+      "-swift-version",
+      "6",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "bootoo",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "BootooMacCoreTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "BootooMacCoreTests",
+      "-package-name",
+      "bootoo",
+      "-c",
+      "/Users/ningaloha/Documents/Repository/bootoo/tests/mac/apple_silicon/BootooMacCoreTests.swift",
+      "-I",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx14.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-swift-version",
+      "6",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "bootoo",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ],
+    "bootooPackageTests" : [
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc",
+      "-module-name",
+      "bootooPackageTests",
+      "-package-name",
+      "bootoo",
+      "-c",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.derived/runner.swift",
+      "-I",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/Modules",
+      "-target",
+      "arm64-apple-macosx13.0",
+      "-incremental",
+      "-enable-batch-mode",
+      "-serialize-diagnostics",
+      "-index-store-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/index/store",
+      "-Onone",
+      "-enable-testing",
+      "-Xfrontend",
+      "-enable-cross-import-overlays",
+      "-j10",
+      "-DSWIFT_PACKAGE",
+      "-DDEBUG",
+      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
+      "-module-cache-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/ModuleCache",
+      "-parseable-output",
+      "-parse-as-library",
+      "-emit-objc-header",
+      "-emit-objc-header-path",
+      "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/include/bootooPackageTests-Swift.h",
+      "-plugin-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/plugins/testing",
+      "-sdk",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-F",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-I",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-L",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib",
+      "-g",
+      "-Xcc",
+      "-isysroot",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.2.sdk",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/Frameworks",
+      "-Xcc",
+      "-F",
+      "-Xcc",
+      "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/Library/PrivateFrameworks",
+      "-Xcc",
+      "-fPIC",
+      "-Xcc",
+      "-g",
+      "-package-name",
+      "bootoo",
+      "-driver-use-frontend-path",
+      "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+    ]
+  },
+  "targetDependencyMap" : {
+    "BootooMacCore" : [
+
+    ],
+    "BootooMacCoreTests" : [
+      "BootooMacCore"
+    ],
+    "bootooPackageTests" : [
+      "BootooMacCoreTests",
+      "BootooMacCore"
+    ]
+  },
+  "testDiscoveryCommands" : {
+
+  },
+  "testEntryPointCommands" : {
+    "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.derived/runner.swift" : {
+      "inputs" : [
+
+      ],
+      "outputs" : [
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.derived/runner.swift"
+        }
+      ]
+    }
+  },
+  "traitConfiguration" : {
+    "default" : {
+
+    }
+  },
+  "writeCommands" : {
+    "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/device_management/DeviceDiscovery.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/image_validation/ImageValidator.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/privileged_execution/PrivilegedExecutor.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreError.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreLogger.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreModels.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/write_engine/WriteEngine.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/sources"
+    },
+    "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/tests/mac/apple_silicon/BootooMacCoreTests.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/sources"
+    },
+    "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/sources" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<sources-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.derived/runner.swift"
+        }
+      ],
+      "outputFilePath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/sources"
+    },
+    "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.product/Objects.LinkFileList" : {
+      "alwaysOutOfDate" : false,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<link-file-list>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreError.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreLogger.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/CoreModels.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/DeviceDiscovery.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/ImageValidator.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/PrivilegedExecutor.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCore.build/WriteEngine.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/BootooMacCoreTests.build/BootooMacCoreTests.swift.o"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.build/runner.swift.o"
+        }
+      ],
+      "outputFilePath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/bootooPackageTests.product/Objects.LinkFileList"
+    },
+    "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt" : {
+      "alwaysOutOfDate" : true,
+      "inputs" : [
+        {
+          "kind" : "virtual",
+          "name" : "<swift-get-version>"
+        },
+        {
+          "kind" : "file",
+          "name" : "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc"
+        }
+      ],
+      "outputFilePath" : "/Users/ningaloha/Documents/Repository/bootoo/.build/arm64-apple-macosx/debug/swift-version--58304C5D6DBC2206.txt"
+    }
+  }
+}

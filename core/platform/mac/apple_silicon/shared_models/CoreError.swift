@@ -1,6 +1,6 @@
 import Foundation
 
-public enum CoreErrorCode: String {
+public enum CoreErrorCode: String, Sendable {
     case permissionDenied
     case deviceNotFound
     case deviceBusy
