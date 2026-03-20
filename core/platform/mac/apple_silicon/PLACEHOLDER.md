@@ -1,1 +1,0 @@
-# Placeholder for core/platform/mac/apple_silicon
