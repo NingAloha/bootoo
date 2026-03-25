@@ -77,9 +77,13 @@ def list_available_devices() -> List[Dict[str, Any]]:
     return [d for d in all_devices if _validate_target(d)]
 
 if __name__ == "__main__":
+    def format_gb(size_bytes: int) -> str:
+        gb = size_bytes / (1024 ** 3)
+        return f"{gb:.2f} GB"
+
     print("所有磁盘：")
     for d in list_all_devices():
-        print(f"id: {d['id']}, device: {d['device']}, size: {d['size_bytes']}, volumes: {d['volumes']}")
+        print(f"id: {d['id']}, device: {d['device']}, size: {format_gb(d['size_bytes'])}, volumes: {d['volumes']}")
     print("\n可用磁盘：")
     for d in list_available_devices():
-        print(f"id: {d['id']}, device: {d['device']}, size: {d['size_bytes']}, volumes: {d['volumes']}")
+        print(f"id: {d['id']}, device: {d['device']}, size: {format_gb(d['size_bytes'])}, volumes: {d['volumes']}")
