@@ -1,7 +1,0 @@
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/device_management/DeviceDiscovery.swift
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/image_validation/ImageValidator.swift
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/privileged_execution/PrivilegedExecutor.swift
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreError.swift
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreLogger.swift
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/shared_models/CoreModels.swift
-/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/apple_silicon/write_engine/WriteEngine.swift

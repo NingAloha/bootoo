@@ -6,13 +6,13 @@
 
 Mac 上现有的工具（如 Etcher）对 Windows/Mac/Linux 系统盘的支持不够完善，有时写入后的U盘无法引导安装。Boot Camp 早已不支持M系列芯片的Mac，官方方案也无法满足新老设备混用需求。
 
-我由此产生了做一个适用于 Mac 的「多系统启动盘制作小工具」的想法。希望能弥补这个实际缺口，让大家用 Mac 更轻松地制作装机盘，不管是 Windows、Linux、macOS 恢复盘还是其它操作系统，都能一键完成。
+我由此产生了做一个适用于 M 芯片 Mac 的「启动盘制作小工具」的想法。项目将专注在 Apple Silicon 设备上，把检测、写盘流程、引导兼容、错误恢复都做到更稳定、更易用，不再分散到其它平台。
 
 ---
 
 ## 项目结构规划
 
-本项目采用高度清晰分层的目录结构，方便未来多平台兼容与专业开发。初始结构如下图所示：
+本项目采用清晰的单平台分层结构，专注 M 芯片 Mac 的开发与迭代。初始结构如下图所示：
 
 ```
 bootoo/
@@ -20,62 +20,40 @@ bootoo/
 ├── README.md
 ├── LICENSE
 │
-├── core/                   # 项目的核心逻辑，平台相关的启动盘制作等
-│   ├── platform/           # 按平台再细分
-│   │   ├── mac/
-│   │   │   ├── apple_silicon/   # M系列芯片Mac专用代码
-│   │   │   │   ├── device_detection.swift
-│   │   │   │   ├── diskutil_m.swift
-│   │   │   │   └── ...
-│   │   │   ├── intel/     # Intel芯片Mac专用代码
-│   │   │   │   ├── device_detection.swift
-│   │   │   │   └── ...
-│   │   │   └── common/    # Mac通用（M和Intel共用）的代码，如镜像处理、日志等
-│   │   │       ├── image_utils.swift
-│   │   │       ├── log.swift
-│   │   │       └── ...
-│   │   ├── windows/
-│   │   │   ├── device_detection.py
-│   │   │   └── ...
-│   │   ├── linux/
-│   │   │   └── ...
-│   │   └── utils/         # 平台无关的工具模块
-│   ├── api/               # 对外接口、核心操作说明（可做给UI或脚本调用的入口）
+├── core/                   # 项目的核心逻辑（仅 M 芯片 Mac）
+│   ├── mac/                # Apple Silicon 平台核心实现
+│   │   ├── device_detection.swift   # 设备与系统环境检测
+│   │   ├── diskutil_m.swift         # 磁盘识别、分区、格式化与写入
+│   │   ├── image_utils.swift        # 镜像校验、挂载、转换等
+│   │   ├── boot_prep.swift          # 引导文件准备与兼容处理
+│   │   └── log.swift                # 日志与错误追踪
+│   ├── api/               # 对外接口、核心操作说明（可做给 UI 或脚本调用的入口）
 │   │   ├── bootoo_api.swift
 │   │   └── ...
-│   └── config/            # 配置文件，平台检测、写盘参数、默认镜像路径等
+│   └── config/            # 配置文件：写盘参数、默认镜像路径、重试策略等
 │       ├── mac_m1_config.yaml
 │       └── ...
 │
-├── ui/                    # 用户界面 (GUI)，按平台/技术再分
+├── ui/                    # 用户界面 (GUI)，仅面向 Apple Silicon Mac
 │   ├── mac/
-│   │   ├── apple_silicon/
-│   │   │   ├── MainView.swift
-│   │   │   └── ...
-│   │   ├── intel/
-│   │   │   └── ...
-│   │   └── shared/        # mac共用UI组件
-│   ├── windows/
+│   │   ├── MainView.swift
+│   │   ├── WriteFlowView.swift
 │   │   └── ...
-│   ├── linux/
-│   │   └── ...
-│   └── components/        # 可复用的UI组件
+│   └── components/        # 可复用 UI 组件
 │
 ├── scripts/               # 辅助脚本（shell, python...）
 │   ├── mac/
 │   │   ├── make_boot_disk.sh
 │   │   ├── diskutil_helper.sh
 │   │   └── ...
-│   ├── windows/
-│   ├── linux/
 │   └── utils/
 │
 ├── docs/                  # 文档, 按分类详细组织
 │   ├── architecture.md    # 项目整体架构说明
 │   ├── install.md         # 安装与使用说明
-│   ├── m_chip_guide.md    # M系列Mac的专用说明
+│   ├── m_chip_guide.md    # M 系列 Mac 专用说明
 │   ├── dev_guide.md       # 开发协作指引、接口说明
-│   ├── platform_compat.md # 多平台兼容性说明
+│   ├── platform_compat.md # M 系列机型与系统版本兼容性说明
 │   └── troubleshooting.md # 常见问题及解决
 │
 ├── resources/             # 资源, 测试镜像、界面图片、图标等
@@ -84,13 +62,10 @@ bootoo/
 │   ├── test_iso/
 │   └── ...
 │
-├── tests/                 # 测试用例，单测、集成测试
+├── tests/                 # 测试用例（单测、集成测试）
 │   ├── mac/
 │   │   ├── apple_silicon/
-│   │   ├── intel/
 │   │   └── shared/
-│   ├── windows/
-│   ├── linux/
 │   └── common/
 │
 ├── .github/               # GitHub Actions, Issue/PR模板等
@@ -101,9 +76,14 @@ bootoo/
 ```
 
 ### 分层说明
-- core/platform：核心按平台与芯片分层，便于扩展与维护
-- ui：各平台/芯片的界面模块独立，支持未来多平台
+- core/mac：聚焦 M 芯片 Mac 的核心流程，优先保证稳定性与可维护性
+- ui/mac：围绕单平台使用场景设计，减少多平台分支复杂度
 - scripts/resources/tests/docs：辅助脚本、资源、文档、测试分门别类组织
+
+### 当前范围（Scope）
+- 仅支持 M 系列芯片（Apple Silicon）Mac
+- 不包含 Intel Mac 支持
+- 不包含 Windows/Linux 本地运行版本
 
 ---
 
