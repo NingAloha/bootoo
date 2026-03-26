@@ -66,11 +66,9 @@ def _validate_target(device: Dict[str, Any]) -> bool:
     return True
 
 def list_all_devices() -> List[Dict[str, Any]]:
-    """返回所有扫描到的磁盘设备（含详细字段）"""
     return _scan_devices()
 
 def list_available_devices() -> List[Dict[str, Any]]:
-    """返回通过安全校验的可用磁盘设备"""
     all_devices = _scan_devices()
     return [d for d in all_devices if _validate_target(d)]
 
