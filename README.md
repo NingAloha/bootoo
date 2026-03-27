@@ -20,59 +20,68 @@ bootoo/
 ├── README.md
 ├── LICENSE
 │
-├── core/                   # 项目的核心逻辑（仅 M 芯片 Mac）
-│   ├── mac/                # Apple Silicon 平台核心实现
-│   │   ├── device_detection.swift   # 设备与系统环境检测
-│   │   ├── diskutil_m.swift         # 磁盘识别、分区、格式化与写入
-│   │   ├── image_utils.swift        # 镜像校验、挂载、转换等
-│   │   ├── boot_prep.swift          # 引导文件准备与兼容处理
-│   │   └── log.swift                # 日志与错误追踪
-│   ├── api/               # 对外接口、核心操作说明（可做给 UI 或脚本调用的入口）
-│   │   ├── bootoo_api.swift
+├── core/                        # 项目的核心逻辑（仅 M 芯片 Mac）
+│   ├── mac/                     # Apple Silicon 平台核心实现（Python 实现）
+│   │   ├── device_detection.py      # 设备与系统环境检测
+│   │   ├── disk_ops.py             # 磁盘识别、分区、格式化与写入
+│   │   ├── image_utils.py          # 镜像校验、挂载、转换等
+│   │   ├── recovery.py             # 错误恢复与修复流程
+│   │   ├── write_engine.py         # 写盘主流程与调度
+│   │   ├── log.py                  # 日志与错误追踪
+│   │   ├── permission_guard.py     # 权限检测与提升
+│   │   ├── verify.py               # 镜像/设备校验
+│   │   ├── errors.py               # 错误类型定义
+│   │   └── commands/               # 子命令实现
+│   ├── api/                    # 对外接口、核心操作说明（可做给 UI 或脚本调用的入口）
+│   │   ├── bootoo_api.py
+│   │   ├── contracts.py
+│   │   ├── models.py
 │   │   └── ...
-│   └── config/            # 配置文件：写盘参数、默认镜像路径、重试策略等
-│       ├── mac_m1_config.yaml
+│   └── config/                 # 配置文件：写盘参数、默认镜像路径、重试策略等
+│       ├── default.yaml
+│       ├── device_rules.yaml
+│       ├── image_rules.yaml
 │       └── ...
 │
-├── ui/                    # 用户界面 (GUI)，仅面向 Apple Silicon Mac
+├── ui/                         # 用户界面 (GUI)，仅面向 Apple Silicon Mac
 │   ├── mac/
-│   │   ├── MainView.swift
-│   │   ├── WriteFlowView.swift
-│   │   └── ...
-│   └── components/        # 可复用 UI 组件
+│   └── components/             # 可复用 UI 组件
 │
-├── scripts/               # 辅助脚本（shell, python...）
+├── scripts/                    # 辅助脚本（shell, python...）
 │   ├── mac/
-│   │   ├── make_boot_disk.sh
-│   │   ├── diskutil_helper.sh
+│   │   ├── dev_scan.sh
 │   │   └── ...
 │   └── utils/
 │
-├── docs/                  # 文档, 按分类详细组织
-│   ├── architecture.md    # 项目整体架构说明
-│   ├── install.md         # 安装与使用说明
-│   ├── m_chip_guide.md    # M 系列 Mac 专用说明
-│   ├── dev_guide.md       # 开发协作指引、接口说明
-│   ├── platform_compat.md # M 系列机型与系统版本兼容性说明
-│   └── troubleshooting.md # 常见问题及解决
+├── docs/                       # 文档, 按分类详细组织
+│   ├── architecture.md         # 项目整体架构说明
+│   ├── install.md              # 安装与使用说明
+│   ├── m_chip_guide.md         # M 系列 Mac 专用说明
+│   ├── dev_guide.md            # 开发协作指引、接口说明
+│   ├── platform_compat.md      # M 系列机型与系统版本兼容性说明
+│   ├── troubleshooting.md      # 常见问题及解决
+│   ├── bootoo_dev_diary.md     # 开发日志
+│   ├── folder_plan.md          # 文件夹规划
+│   ├── task_checklist.md       # 任务清单
+│   └── comment_style.md        # 注释风格规范
 │
-├── resources/             # 资源, 测试镜像、界面图片、图标等
+├── resources/                  # 资源, 测试镜像、界面图片、图标等
 │   ├── images/
 │   ├── icon/
 │   ├── test_iso/
 │   └── ...
 │
-├── tests/                 # 测试用例（单测、集成测试）
+├── tests/                      # 测试用例（单测、集成测试）
 │   ├── mac/
 │   │   ├── apple_silicon/
 │   │   └── shared/
 │   └── common/
 │
-├── .github/               # GitHub Actions, Issue/PR模板等
+├── .github/                    # GitHub Actions, Issue/PR模板等
 │   └── workflows/
 │
 ├── .gitignore
-└── pyproject.toml / Package.swift / ... （依据开发语言自动生成的工程文件）
+└── pyproject.toml              # Python 工程文件（自动生成）
 ```
 
 ### 分层说明
@@ -84,10 +93,6 @@ bootoo/
 - 仅支持 M 系列芯片（Apple Silicon）Mac
 - 不包含 Intel Mac 支持
 - 不包含 Windows/Linux 本地运行版本
-
----
-
-> 有疑问或需要生成空目录脚本，请随时提出。
 
 ---
 
