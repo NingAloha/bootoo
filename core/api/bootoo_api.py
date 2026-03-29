@@ -54,4 +54,4 @@ if __name__ == "__main__":
         writable, info = check_selected_device_writable(selected_device)
         print(f"设备可写: {writable}")
         if not writable:
-            print(f"原因: {info.get('reason', 'Unknown')}")
+            print(f"原因: {info.get('info', 'Unknown')}")
