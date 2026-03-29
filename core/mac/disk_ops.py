@@ -52,6 +52,20 @@ def format_disk(partition_path: str, fs_type: str = "exFAT", name: str = "Untitl
             - message: 说明信息（str）
             - data: 详细信息（dict，包含 partition_path, fs_type, name，失败时为 None）
     """
+    # 卷标长度限制
+    if fs_type in ["exFAT", "MS-DOS FAT32"]:
+        max_len = 11
+    elif fs_type in ["JHFS+", "APFS"]:
+        max_len = 27
+    else:
+        max_len = 27
+    if len(name) > max_len:
+        print(f"警告：卷标过长，已自动截断为前{max_len}字符。")
+        name = name[:max_len]
+    # 格式化前先尝试卸载分区
+    unmount_res = unmount_device(partition_path)
+    if not unmount_res["ok"]:
+        print(f"警告：分区卸载失败，可能影响格式化成功率。信息：{unmount_res['message']}")
     try:
         result = subprocess.run(
             ["diskutil", "eraseVolume", fs_type, name, partition_path],
