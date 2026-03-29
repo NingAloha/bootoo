@@ -2,6 +2,20 @@ from typing import List, Dict, Any, Tuple
 from core.mac.device_detection import list_available_devices
 from core.mac.permission_guard import check_device_writable
 from core.mac.disk_ops import unmount_device
+from core.mac.image_utils import check_image
+def check_image_file(path: str) -> Dict[str, Any]:
+    """
+    检查镜像文件的存在性、格式和 SHA256。
+    输入参数：
+        - path: 镜像文件路径（str）
+    返回值：
+        - Dict[str, Any]:
+            - ok: 是否检查通过（bool）
+            - code: 状态码（str），如 'SUCCESS'、'IMAGE_NOT_FOUND'
+            - message: 说明信息（str）
+            - data: 详细信息（dict，包含 path/format/sha256，失败时为 None）
+    """
+    return check_image(path)
 
 def get_available_devices() -> List[Dict[str, Any]]:
     """
@@ -55,3 +69,20 @@ if __name__ == "__main__":
         print(f"设备可写: {writable}")
         if not writable:
             print(f"原因: {info.get('info', 'Unknown')}")
+
+    # 镜像检查测试
+    print("\n镜像检查测试：")
+    test_images = [
+        "resources/test_iso/blank_1mb.iso",
+        "resources/test_iso/blank_10mb.dmg",
+        "resources/test_iso/blank_10mb.img"
+    ]
+    for img_path in test_images:
+        result = check_image_file(img_path)
+        print(f"测试镜像: {img_path}")
+        print(f"  ok: {result['ok']}")
+        print(f"  code: {result['code']}")
+        print(f"  message: {result['message']}")
+        if result["data"]:
+            print(f"  data: {result['data']}")
+        print("-" * 40)

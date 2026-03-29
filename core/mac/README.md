@@ -55,8 +55,37 @@
                  - bool: True 表示卸载成功，False 表示卸载失败 
 - errors.py(错误定义与处理)
     - 预留，暂未实现
-- image_utils.py(镜像处理)
-    - 预留，暂未实现
+- image_utils.py (镜像处理)
+    - 私有函数：
+        - _check_image_exists(path: str) -> bool
+            - 描述：检查镜像文件是否存在。
+            - 输入参数：
+                - path: 镜像文件路径（str）
+            - 返回值：
+                - bool: True 表示存在，False 表示不存在
+        - _get_image_format(path: str) -> str
+            - 描述：识别镜像文件格式（基于扩展名）。
+            - 输入参数：
+                - path: 镜像文件路径（str）
+            - 返回值：
+                - str: 格式字符串，如 'dmg', 'iso', 'img'，未知返回 'unknown'
+        - _calc_sha256(path: str) -> Optional[str]
+            - 描述：计算镜像文件的 SHA256 值。
+            - 输入参数：
+                - path: 镜像文件路径（str）
+            - 返回值：
+                - str: sha256 字符串，文件不存在时返回 None
+    - 公共接口：
+        - check_image(path: str) -> Dict[str, Any]
+            - 描述：检查镜像文件的存在性、格式和 SHA256，返回统一结构。
+            - 输入参数：
+                - path: 镜像文件路径（str）
+            - 返回值：
+                - Dict[str, Any]:
+                    - ok: 是否检查通过（bool）
+                    - code: 状态码（str），如 'SUCCESS'、'IMAGE_NOT_FOUND'
+                    - message: 说明信息（str）
+                    - data: 详细信息（dict，包含 path/format/sha256，失败时为 None）
 - log.py(日志)
     - 预留，暂未实现
 - permission_guard.py (权限校验)
