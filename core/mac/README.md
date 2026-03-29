@@ -46,13 +46,63 @@
             - 返回值：List[Dict[str, Any]]，结构同 _scan_devices
     
 - disk_ops.py (磁盘操作)
-     - 公共接口：
-         - unmount_device(device_path: str) -> bool
-             - 描述：卸载指定的磁盘设备。
+     - 私有函数：
+         - format_gb(size_bytes: int) -> str
+             - 描述：将字节数格式化为 GB 字符串，保留两位小数。
              - 输入参数：
-                 - device_path: 设备路径（str），如"/dev/disk2"
+                 - size_bytes: 容量字节数（int）
              - 返回值：
-                 - bool: True 表示卸载成功，False 表示卸载失败 
+                 - str: 格式化后的容量字符串，如 "28.65 GB"
+         - print_disk_summary(info: dict)
+             - 描述：以简明方式输出磁盘或分区的关键信息摘要。
+             - 输入参数：
+                 - info: 由 get_disk_info 返回的信息字典
+             - 返回值：无（直接打印）
+         - ask_volume_name(default_name="Untitled") -> str
+             - 描述：交互式询问用户输入卷标名，支持默认值。
+             - 输入参数：
+                 - default_name: 默认卷标名（str）
+             - 返回值：
+                 - str: 用户输入或默认的卷标名
+         - list_partitions(device_info: dict) -> list
+             - 描述：解析磁盘信息，返回所有分区的路径和卷标名列表。
+             - 输入参数：
+                 - device_info: 由 get_disk_info 返回的磁盘信息字典
+             - 返回值：
+                 - list: [(分区路径, 卷标名)]
+     - 公共接口：
+         - unmount_device(device_path: str) -> Dict[str, Any]
+             - 描述：卸载指定的磁盘或分区（支持 /dev/diskX 或 /dev/diskXsY）。
+             - 输入参数：
+                 - device_path: 设备或分区路径（str），如"/dev/disk2" 或 "/dev/disk2s1"
+             - 返回值：
+                 - Dict[str, Any]:
+                     - ok: 是否卸载成功（bool）
+                     - code: 状态码（str），如 'SUCCESS'、'UNMOUNT_FAILED'
+                     - message: 说明信息（str）
+                     - data: 详细信息（dict，包含 device_path，失败时为 None）
+         - format_disk(partition_path: str, fs_type: str = "exFAT", name: str = "Untitled") -> Dict[str, Any]
+             - 描述：格式化指定分区。
+             - 输入参数：
+                 - partition_path: 分区路径（str），如"/dev/disk2s1"
+                 - fs_type: 文件系统类型（str），如"exFAT"、"APFS"，默认"exFAT"
+                 - name: 卷标名（str），默认"Untitled"
+             - 返回值：
+                 - Dict[str, Any]:
+                     - ok: 是否格式化成功（bool）
+                     - code: 状态码（str），如 'SUCCESS'、'FORMAT_FAILED'
+                     - message: 说明信息（str）
+                     - data: 详细信息（dict，包含 partition_path, fs_type, name，失败时为 None）
+         - get_disk_info(path: str) -> Dict[str, Any]
+             - 描述：查询磁盘或分区信息。
+             - 输入参数：
+                 - path: 设备或分区路径（str），如"/dev/disk2" 或 "/dev/disk2s1"
+             - 返回值：
+                 - Dict[str, Any]:
+                     - ok: 是否查询成功（bool）
+                     - code: 状态码（str），如 'SUCCESS'、'INFO_FAILED'
+                     - message: 说明信息（str）
+                     - data: 详细信息（dict，查询到的信息，失败时为 None）
 - errors.py(错误定义与处理)
     - 预留，暂未实现
 - image_utils.py (镜像处理)

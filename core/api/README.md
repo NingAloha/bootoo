@@ -36,16 +36,55 @@
                         - device: 设备路径（str）
                         - writable: 是否可写（bool）
                         - info: 说明信息（str）
-        - unmount_device(device_path: str) -> bool
-            - 描述：卸载指定的磁盘设备。
+        - unmount_device(device_path: str) -> Dict[str, Any]
+            - 描述：卸载指定的磁盘或分区。
             - 输入参数：
-                - device_path: 设备路径（str），如"/dev/disk2"
+                - device_path: 设备或分区路径（str），如"/dev/disk2" 或 "/dev/disk2s1"
             - 返回值：
-                - bool: True 表示卸载成功，False 表示卸载失败
+                - Dict[str, Any]:
+                    - ok: 是否卸载成功（bool）
+                    - code: 状态码（str），如 'SUCCESS'、'UNMOUNT_FAILED'
+                    - message: 说明信息（str）
+                    - data: 详细信息（dict，包含 device_path，失败时为 None）
+        - format_disk(partition_path: str, fs_type: str = "exFAT", name: str = "Untitled") -> Dict[str, Any]
+            - 描述：格式化指定分区。
+            - 输入参数：
+                - partition_path: 分区路径（str），如"/dev/disk2s1"
+                - fs_type: 文件系统类型（str），如"exFAT"、"APFS"，默认"exFAT"
+                - name: 卷标名（str），默认"Untitled"
+            - 返回值：
+                - Dict[str, Any]:
+                    - ok: 是否格式化成功（bool）
+                    - code: 状态码（str），如 'SUCCESS'、'FORMAT_FAILED'
+                    - message: 说明信息（str）
+                    - data: 详细信息（dict，包含 partition_path, fs_type, name，失败时为 None）
+        - get_disk_info(path: str) -> Dict[str, Any]
+            - 描述：查询磁盘或分区信息。
+            - 输入参数：
+                - path: 设备或分区路径（str），如"/dev/disk2" 或 "/dev/disk2s1"
+            - 返回值：
+                - Dict[str, Any]:
+                    - ok: 是否查询成功（bool）
+                    - code: 状态码（str），如 'SUCCESS'、'INFO_FAILED'
+                    - message: 说明信息（str）
+                    - data: 详细信息（dict，查询到的信息，失败时为 None）
+        - check_image_file(path: str) -> Dict[str, Any]
+            - 描述：检查镜像文件的存在性、格式和 SHA256。
+            - 输入参数：
+                - path: 镜像文件路径（str）
+            - 返回值：
+                - Dict[str, Any]:
+                    - ok: 是否检查通过（bool）
+                    - code: 状态码（str），如 'SUCCESS'、'IMAGE_NOT_FOUND'
+                    - message: 说明信息（str）
+                    - data: 详细信息（dict，包含 path/format/sha256，失败时为 None）
     - 依赖：
         - core.mac.device_detection.list_available_devices
         - core.mac.permission_guard.check_device_writable
         - core.mac.disk_ops.unmount_device
+        - core.mac.disk_ops.format_disk
+        - core.mac.disk_ops.get_disk_info
+        - core.mac.image_utils.check_image
 
 - contracts.py (接口约定)
     - 预留，暂未实现
