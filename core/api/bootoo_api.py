@@ -1,8 +1,9 @@
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Callable, Optional
 from core.mac.device_detection import list_available_devices
 from core.mac.permission_guard import check_device_writable
 import core.mac.disk_ops as disk_ops
 from core.mac.image_utils import check_image
+from core.mac.write_engine import write_image_auto
 
 def check_image_file(path: str) -> Dict[str, Any]:
     """
@@ -82,6 +83,19 @@ def get_disk_info(path: str) -> Dict[str, Any]:
             - data: 详细信息（dict，查询到的信息，失败时为 None）
     """
     return disk_ops.get_disk_info(path)
+
+
+def write_image(src: str, dst: str, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]:
+    """
+    自动判断镜像类型（dmg 用 asr，其它用 dd）并写入目标设备，支持进度回调。
+    输入参数：
+        - src: 源镜像路径（str）
+        - dst: 目标设备路径（str）
+        - progress_callback: 进度回调函数（可选，形如 lambda percent: ...）
+    返回值：
+        - Dict[str, Any]，包含 ok/code/message/data 等字段
+    """
+    return write_image_auto(src, dst, progress_callback=progress_callback)
 
 if __name__ == "__main__":
     # 获取所有可用设备

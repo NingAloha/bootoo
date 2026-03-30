@@ -165,5 +165,32 @@
     - 预留，暂未实现
 - verify.py(校验相关)
     - 预留，暂未实现
-- write_engine.py(写入引擎)
-    - 预留，暂未实现
+- write_engine.py (写入引擎)
+    - 私有函数：
+        - _is_dmg(path: str) -> bool
+            - 描述：判断给定路径是否为 dmg 镜像。
+            - 输入参数：path 镜像文件路径（str）
+            - 返回值：bool，True 表示 dmg，False 表示其它格式
+        - _dd_write(src: str, dst: str, block_size: int = 1024*1024, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]
+            - 描述：使用 dd 命令将镜像写入目标设备，支持进度回调。
+            - 输入参数：
+                - src: 源镜像路径（str）
+                - dst: 目标设备路径（str）
+                - block_size: 块大小（int，默认1MB）
+                - progress_callback: 进度回调函数（可选）
+            - 返回值：Dict，包含 ok/code/message/data 等字段
+        - _asr_restore(src: str, dst: str, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]
+            - 描述：使用 asr 恢复 dmg 镜像到目标设备，支持进度回调。
+            - 输入参数：
+                - src: 源镜像路径（str）
+                - dst: 目标设备路径（str）
+                - progress_callback: 进度回调函数（可选）
+            - 返回值：Dict，包含 ok/code/message/data 等字段
+    - 公共接口：
+        - write_image_auto(src: str, dst: str, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]
+            - 描述：自动判断镜像类型（dmg 用 asr，其它用 dd）并写入目标设备，支持进度回调。
+            - 输入参数：
+                - src: 源镜像路径（str）
+                - dst: 目标设备路径（str）
+                - progress_callback: 进度回调函数（可选）
+            - 返回值：Dict，包含 ok/code/message/data 等字段
