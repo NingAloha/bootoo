@@ -1,9 +1,15 @@
 import subprocess
+import plistlib
+import logging
 from core.mac.device_detection import list_available_devices
 from typing import Dict, Any
 
 # 对外接口：unmount_device、format_disk、get_disk_info
 # 参数全部统一为 partition_path 或 device_path，直接传递即可，无需额外拼接或处理
+
+logger = logging.getLogger(__name__)
+
+_VALID_FS_TYPES = {"exFAT", "MS-DOS FAT32", "APFS", "JHFS+"}
 
 def unmount_device(device_path: str) -> Dict[str, Any]:
     """
@@ -17,25 +23,34 @@ def unmount_device(device_path: str) -> Dict[str, Any]:
             - message: 说明信息（str）
             - data: 详细信息（dict，包含 device_path，失败时为 None）
     """
+    # 输入校验：设备路径必须以 /dev/ 开头
+    if not device_path or not device_path.startswith("/dev/"):
+        return {"ok": False, "code": "UNMOUNT_FAILED", "message": "无效的设备路径", "data": None}
     try:
         result = subprocess.run(
             ["diskutil", "unmountDisk", device_path],
             capture_output=True,
-            check=True
+            timeout=30,
+            # 原有代码使用 check=True，但同时检查 returncode，两者冲突：
+            # check=True 在非零返回码时直接抛出异常，returncode 的失败分支永远不会执行。
+            # 已改为不使用 check=True，改为手动判断 returncode。
+            # check=True  ← 已移除
         )
+        ok = result.returncode == 0
         return {
-            "ok": result.returncode == 0,
-            "code": "SUCCESS" if result.returncode == 0 else "UNMOUNT_FAILED",
-            "message": "卸载成功" if result.returncode == 0 else result.stderr.decode(),
-            "data": {"device_path": device_path} if result.returncode == 0 else None
+            "ok": ok,
+            "code": "SUCCESS" if ok else "UNMOUNT_FAILED",
+            # 原有代码使用 result.stderr.decode()，未指定编码和错误处理，可能抛出 UnicodeDecodeError
+            # result.stderr.decode()  ← 已替换
+            "message": "卸载成功" if ok else result.stderr.decode("utf-8", errors="replace"),
+            "data": {"device_path": device_path} if ok else None,
         }
+    except subprocess.TimeoutExpired:
+        logger.error("unmount_device 超时: %s", device_path)
+        return {"ok": False, "code": "UNMOUNT_FAILED", "message": "卸载超时", "data": None}
     except Exception as e:
-        return {
-            "ok": False,
-            "code": "UNMOUNT_FAILED",
-            "message": f"卸载设备 {device_path} 失败: {e}",
-            "data": None
-        }
+        logger.error("unmount_device 异常: %s", e)
+        return {"ok": False, "code": "UNMOUNT_FAILED", "message": "卸载设备失败", "data": None}
 
 
 def format_disk(partition_path: str, fs_type: str = "exFAT", name: str = "Untitled") -> Dict[str, Any]:
@@ -50,41 +65,55 @@ def format_disk(partition_path: str, fs_type: str = "exFAT", name: str = "Untitl
             - ok: 是否格式化成功（bool）
             - code: 状态码（str），如 'SUCCESS'、'FORMAT_FAILED'
             - message: 说明信息（str）
-            - data: 详细信息（dict，包含 partition_path, fs_type, name，失败时为 None）
+            - data: 详细信息（dict，包含 partition_path, fs_type, name, unmount_ok，失败时为 None）
     """
+    # 输入校验
+    if not partition_path or not partition_path.startswith("/dev/"):
+        return {"ok": False, "code": "FORMAT_FAILED", "message": "无效的分区路径", "data": None}
+    if fs_type not in _VALID_FS_TYPES:
+        return {"ok": False, "code": "FORMAT_FAILED", "message": f"不支持的文件系统类型: {fs_type}", "data": None}
     # 卷标长度限制
     if fs_type in ["exFAT", "MS-DOS FAT32"]:
         max_len = 11
-    elif fs_type in ["JHFS+", "APFS"]:
-        max_len = 27
     else:
         max_len = 27
     if len(name) > max_len:
-        print(f"警告：卷标过长，已自动截断为前{max_len}字符。")
+        logger.warning("卷标过长，已自动截断为前 %d 字符", max_len)
+        # 原有代码使用 print() 输出警告，已改为 logger.warning
+        # print(f"警告：卷标过长，已自动截断为前{max_len}字符。")  ← 已移除
         name = name[:max_len]
+    # 卷标字符过滤：仅保留 ASCII 可打印字符，避免特殊字符导致 diskutil 行为异常
+    name = "".join(c for c in name if 32 <= ord(c) < 127)
+    if not name:
+        name = "Untitled"
     # 格式化前先尝试卸载分区
     unmount_res = unmount_device(partition_path)
-    if not unmount_res["ok"]:
-        print(f"警告：分区卸载失败，可能影响格式化成功率。信息：{unmount_res['message']}")
+    unmount_ok = unmount_res["ok"]
+    if not unmount_ok:
+        logger.warning("分区卸载失败，继续尝试格式化。原因：%s", unmount_res["message"])
+        # 原有代码使用 print() 输出警告，已改为 logger.warning
+        # print(f"警告：分区卸载失败，可能影响格式化成功率。信息：{unmount_res['message']}")  ← 已移除
     try:
         result = subprocess.run(
             ["diskutil", "eraseVolume", fs_type, name, partition_path],
             capture_output=True,
-            check=True
+            timeout=120,
+            # 原有代码使用 check=True，与 returncode 判断冲突，已移除（同 unmount_device）
+            # check=True  ← 已移除
         )
+        ok = result.returncode == 0
         return {
-            "ok": result.returncode == 0,
-            "code": "SUCCESS" if result.returncode == 0 else "FORMAT_FAILED",
-            "message": "格式化成功" if result.returncode == 0 else result.stderr.decode(),
-            "data": {"partition_path": partition_path, "fs_type": fs_type, "name": name} if result.returncode == 0 else None
+            "ok": ok,
+            "code": "SUCCESS" if ok else "FORMAT_FAILED",
+            "message": "格式化成功" if ok else result.stderr.decode("utf-8", errors="replace"),
+            "data": {"partition_path": partition_path, "fs_type": fs_type, "name": name, "unmount_ok": unmount_ok} if ok else None,
         }
+    except subprocess.TimeoutExpired:
+        logger.error("format_disk 超时: %s", partition_path)
+        return {"ok": False, "code": "FORMAT_FAILED", "message": "格式化超时", "data": None}
     except Exception as e:
-        return {
-            "ok": False,
-            "code": "FORMAT_FAILED",
-            "message": f"格式化分区 {partition_path} 失败: {e}",
-            "data": None
-        }
+        logger.error("format_disk 异常: %s", e)
+        return {"ok": False, "code": "FORMAT_FAILED", "message": "格式化分区失败", "data": None}
 
 
 def get_disk_info(path: str) -> Dict[str, Any]:
@@ -99,27 +128,32 @@ def get_disk_info(path: str) -> Dict[str, Any]:
             - message: 说明信息（str）
             - data: 详细信息（dict，查询到的信息，失败时为 None）
     """
+    if not path or not path.startswith("/dev/"):
+        return {"ok": False, "code": "INFO_FAILED", "message": "无效的设备路径", "data": None}
     try:
         result = subprocess.run(
             ["diskutil", "info", "-plist", path],
             capture_output=True,
-            check=True
+            timeout=10,
+            # check=True  ← 已移除，原因同 unmount_device
         )
-        import plistlib
+        if result.returncode != 0:
+            return {
+                "ok": False,
+                "code": "INFO_FAILED",
+                "message": result.stderr.decode("utf-8", errors="replace"),
+                "data": None,
+            }
+        # 原有代码在函数内部 import plistlib，已移至文件顶部
+        # import plistlib  ← 已移除
         info = plistlib.loads(result.stdout)
-        return {
-            "ok": True,
-            "code": "SUCCESS",
-            "message": "查询成功",
-            "data": info
-        }
+        return {"ok": True, "code": "SUCCESS", "message": "查询成功", "data": info}
+    except subprocess.TimeoutExpired:
+        logger.error("get_disk_info 超时: %s", path)
+        return {"ok": False, "code": "INFO_FAILED", "message": "查询超时", "data": None}
     except Exception as e:
-        return {
-            "ok": False,
-            "code": "INFO_FAILED",
-            "message": f"查询信息 {path} 失败: {e}",
-            "data": None
-        }
+        logger.error("get_disk_info 异常: %s", e)
+        return {"ok": False, "code": "INFO_FAILED", "message": "查询磁盘信息失败", "data": None}
 
 
 def format_gb(size_bytes: int) -> str:
@@ -167,90 +201,3 @@ def list_partitions(device_info: dict) -> list:
                 name = part.get("VolumeName") or "-"
                 partitions.append((path, name))
     return partitions
-
-if __name__ == "__main__":
-    # 获取可用设备列表
-    devices = list_available_devices()
-    if not devices:
-        print("未检测到可用磁盘设备！")
-        exit(1)
-    print("可用磁盘设备：")
-    for idx, d in enumerate(devices):
-        print(f"{idx}: {d['device']}  容量: {format_gb(d['size_bytes'])}  卷: {d['volumes']}")
-    choice = input("请选择设备编号: ")
-    try:
-        idx = int(choice)
-        selected = devices[idx]
-    except (ValueError, IndexError):
-        print("无效选择")
-        exit(1)
-    test_disk = selected['device']
-    print(f"你选择的设备: {test_disk}")
-    # 获取分区列表
-    disk_info = get_disk_info(test_disk)
-    partitions = list_partitions(disk_info)
-    if not partitions:
-        # 兼容单分区老U盘
-        partitions = [(test_disk + "s1", "-")]
-    print("可用分区：")
-    for idx, (p, n) in enumerate(partitions):
-        print(f"{idx}: {p}  卷标: {n}")
-    part_choice = input("请选择要操作的分区编号: ")
-    try:
-        part_idx = int(part_choice)
-        test_partition = partitions[part_idx][0]
-    except (ValueError, IndexError):
-        print("无效选择")
-        exit(1)
-
-    # 只保留 macOS 原生支持的文件系统类型
-    fs_types = [
-        ("exFAT", "exFAT (Win/Linux/U盘通用)"),
-        ("MS-DOS FAT32", "FAT32 (Win/Linux/兼容性好)"),
-        ("APFS", "APFS (Mac系统盘)"),
-        ("JHFS+", "Mac OS 扩展（日志式）")
-    ]
-
-    print("\n请选择要执行的操作：")
-    print("1: 卸载磁盘")
-    print("2: 格式化分区")
-    print("3: 查询磁盘信息")
-    op = input("请输入操作编号: ")
-
-    if op == "1":
-        print("--- 卸载磁盘 ---")
-        result = unmount_device(test_disk)
-        print(f"ok: {result['ok']}")
-        print(f"code: {result['code']}")
-        print(f"message: {result['message']}")
-        if result["data"]:
-            print(f"data: {result['data']}")
-    elif op == "2":
-        print("--- 格式化分区 ---")
-        print("可选文件系统类型：")
-        for i, (fs, desc) in enumerate(fs_types):
-            print(f"{i}: {fs} - {desc}")
-        fs_choice = input("请选择文件系统类型编号（默认0/exFAT）: ")
-        try:
-            fs_idx = int(fs_choice) if fs_choice else 0
-            fs_type = fs_types[fs_idx][0]
-        except (ValueError, IndexError):
-            print("无效选择，使用默认exFAT")
-            fs_type = "exFAT"
-        vol_name = ask_volume_name()
-        result = format_disk(test_partition, fs_type=fs_type, name=vol_name)
-        print(f"ok: {result['ok']}")
-        print(f"code: {result['code']}")
-        print(f"message: {result['message']}")
-        if result["data"]:
-            print(f"data: {result['data']}")
-    elif op == "3":
-        print("--- 查询磁盘信息 ---")
-        result = get_disk_info(test_partition)
-        print(f"ok: {result['ok']}")
-        print(f"code: {result['code']}")
-        print(f"message: {result['message']}")
-        if result["data"]:
-            print_disk_summary(result["data"])
-    else:
-        print("无效操作编号")

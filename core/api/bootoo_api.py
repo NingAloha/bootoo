@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Tuple, Callable, Optional
-from core.mac.device_detection import list_available_devices
+from core.mac.device_detection import list_available_devices, list_all_devices as _list_all_devices
 from core.mac.permission_guard import check_device_writable
 import core.mac.disk_ops as disk_ops
 from core.mac.image_utils import check_image
@@ -7,7 +7,7 @@ from core.mac.write_engine import write_image_auto
 
 def check_image_file(path: str) -> Dict[str, Any]:
     """
-    检查镜像文件的存在性、格式和 SHA256。
+    检查镜像文件的存在性、格式、大小和 SHA256。
     输入参数：
         - path: 镜像文件路径（str）
     返回值：
@@ -15,17 +15,26 @@ def check_image_file(path: str) -> Dict[str, Any]:
             - ok: 是否检查通过（bool）
             - code: 状态码（str），如 'SUCCESS'、'IMAGE_NOT_FOUND'
             - message: 说明信息（str）
-            - data: 详细信息（dict，包含 path/format/sha256，失败时为 None）
+            - data: 详细信息（dict，包含 path/format/size/sha256，失败时含 path）
     """
     return check_image(path)
 
-def get_available_devices() -> List[Dict[str, Any]]:
+def get_all_devices() -> List[Dict[str, Any]]:
     """
-    获取所有可用（可写入/非系统盘）磁盘设备信息列表。
+    获取所有磁盘设备信息列表（含系统盘）。
     输入参数：无
     返回值：List[Dict[str, Any]]，每个字典结构见 device_detection.py
     """
-    return list_available_devices()
+    return _list_all_devices()
+
+def get_available_devices(min_size_bytes: int = 1 * 1024 * 1024 * 1024) -> List[Dict[str, Any]]:
+    """
+    获取所有可用（可写入/非系统盘）磁盘设备信息列表。
+    输入参数：
+        - min_size_bytes: 最小容量要求（int，字节数），默认 1GB
+    返回值：List[Dict[str, Any]]，每个字典结构见 device_detection.py
+    """
+    return list_available_devices(min_size_bytes)
 
 def check_selected_device_writable(device: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
     """
@@ -90,10 +99,14 @@ def write_image(src: str, dst: str, progress_callback: Optional[Callable[[float]
     自动判断镜像类型（dmg 用 asr，其它用 dd）并写入目标设备，支持进度回调。
     输入参数：
         - src: 源镜像路径（str）
-        - dst: 目标设备路径（str）
+        - dst: 目标设备路径（str），须以 /dev/ 开头
         - progress_callback: 进度回调函数（可选，形如 lambda percent: ...）
     返回值：
-        - Dict[str, Any]，包含 ok/code/message/data 等字段
+        - Dict[str, Any]:
+            - ok: 是否写入成功（bool）
+            - code: 状态码（str），如 'SUCCESS'、'DD_FAILED'、'ASR_FAILED'、'SRC_ERROR'、'DST_ERROR'
+            - message: 说明信息（str）
+            - data: 详细信息（dict，包含 src/dst/image_size，失败时含错误输出）
     """
     return write_image_auto(src, dst, progress_callback=progress_callback)
 

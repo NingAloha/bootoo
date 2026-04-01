@@ -31,18 +31,22 @@
                 - mounted: 是否已挂载（bool）
                 - volumes: 设备上的卷名列表（List[str]）
                 - is_system_risk: 是否为系统盘或高风险设备（bool）
-        - _validate_target(device: Dict[str, Any]) -> bool
+                - content: 设备内容类型（str，如"Apple_APFS_Container"）
+        - _validate_target(device: Dict[str, Any], min_size_bytes: int = 1GB) -> bool
             - 描述：校验设备是否为可用目标盘。
-            - 输入参数：device，单个设备信息字典（同上）
+            - 输入参数：
+                - device: 单个设备信息字典（同上）
+                - min_size_bytes: 最小容量要求（int，字节数），默认 1GB
             - 返回值：bool，True 表示可用，False 表示不可用
     - 公共接口：
         - list_all_devices() -> List[Dict[str, Any]]
             - 描述：获取所有磁盘设备信息列表。
             - 输入参数：无
             - 返回值：List[Dict[str, Any]]，结构同 _scan_devices
-        - list_available_devices() -> List[Dict[str, Any]]
+        - list_available_devices(min_size_bytes: int = 1GB) -> List[Dict[str, Any]]
             - 描述：获取所有可用（可写入/非系统盘）磁盘设备信息列表。
-            - 输入参数：无
+            - 输入参数：
+                - min_size_bytes: 最小容量要求（int，字节数），默认 1GB
             - 返回值：List[Dict[str, Any]]，结构同 _scan_devices
     
 - disk_ops.py (磁盘操作)
@@ -72,7 +76,7 @@
                  - list: [(分区路径, 卷标名)]
      - 公共接口：
          - unmount_device(device_path: str) -> Dict[str, Any]
-             - 描述：卸载指定的磁盘或分区（支持 /dev/diskX 或 /dev/diskXsY）。
+             - 描述：卸载指定的磁盘或分区（支持 /dev/diskX 或 /dev/diskXsY）。输入路径须以 /dev/ 开头，否则直接返回失败。
              - 输入参数：
                  - device_path: 设备或分区路径（str），如"/dev/disk2" 或 "/dev/disk2s1"
              - 返回值：
@@ -82,7 +86,7 @@
                      - message: 说明信息（str）
                      - data: 详细信息（dict，包含 device_path，失败时为 None）
          - format_disk(partition_path: str, fs_type: str = "exFAT", name: str = "Untitled") -> Dict[str, Any]
-             - 描述：格式化指定分区。
+             - 描述：格式化指定分区。fs_type 须为支持的类型之一（exFAT/MS-DOS FAT32/APFS/JHFS+），卷标自动截断并过滤非 ASCII 字符，格式化前自动尝试卸载。
              - 输入参数：
                  - partition_path: 分区路径（str），如"/dev/disk2s1"
                  - fs_type: 文件系统类型（str），如"exFAT"、"APFS"，默认"exFAT"
@@ -92,9 +96,9 @@
                      - ok: 是否格式化成功（bool）
                      - code: 状态码（str），如 'SUCCESS'、'FORMAT_FAILED'
                      - message: 说明信息（str）
-                     - data: 详细信息（dict，包含 partition_path, fs_type, name，失败时为 None）
+                     - data: 详细信息（dict，包含 partition_path, fs_type, name, unmount_ok，失败时为 None）
          - get_disk_info(path: str) -> Dict[str, Any]
-             - 描述：查询磁盘或分区信息。
+             - 描述：查询磁盘或分区信息。输入路径须以 /dev/ 开头，否则直接返回失败。
              - 输入参数：
                  - path: 设备或分区路径（str），如"/dev/disk2" 或 "/dev/disk2s1"
              - 返回值：
@@ -119,6 +123,12 @@
                 - path: 镜像文件路径（str）
             - 返回值：
                 - str: 格式字符串，如 'dmg', 'iso', 'img'，未知返回 'unknown'
+        - _get_image_size(path: str) -> Optional[int]
+            - 描述：获取镜像文件大小（字节），文件不存在或无法读取时返回 None。
+            - 输入参数：
+                - path: 镜像文件路径（str）
+            - 返回值：
+                - int（字节数）或 None
         - _calc_sha256(path: str) -> Optional[str]
             - 描述：计算镜像文件的 SHA256 值。
             - 输入参数：
@@ -127,7 +137,7 @@
                 - str: sha256 字符串，文件不存在时返回 None
     - 公共接口：
         - check_image(path: str) -> Dict[str, Any]
-            - 描述：检查镜像文件的存在性、格式和 SHA256，返回统一结构。
+            - 描述：检查镜像文件的存在性、格式、大小和 SHA256，返回统一结构。
             - 输入参数：
                 - path: 镜像文件路径（str）
             - 返回值：
@@ -135,19 +145,19 @@
                     - ok: 是否检查通过（bool）
                     - code: 状态码（str），如 'SUCCESS'、'IMAGE_NOT_FOUND'
                     - message: 说明信息（str）
-                    - data: 详细信息（dict，包含 path/format/sha256，失败时为 None）
+                    - data: 详细信息（dict，成功时包含 path/format/size/sha256，失败时包含 path）
 - log.py(日志)
     - 预留，暂未实现
 - permission_guard.py (权限校验)
     - 私有函数：
         - _check_writable(dev_path: str) -> Tuple[bool, str]
-            - 描述：检查指定设备路径是否可写。
+            - 描述：检查指定设备路径是否可写。路径须以 /dev/ 开头且为块设备或字符设备，否则直接返回失败。使用 O_WRONLY | O_NONBLOCK 探测，避免对设备产生写入副作用。
             - 输入参数：
                 - dev_path: 设备路径（str），如"/dev/disk2"
             - 返回值：
                 - Tuple[bool, str]
                     - bool: True 表示可写，False 表示不可写
-                    - str: 不可写时的原因说明（如权限不足、设备被占用等）
+                    - str: 不可写时的原因说明（如权限不足、设备被占用、只读文件系统等）
     - 公共接口：
         - check_device_writable(device: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]
             - 描述：检查设备是否可写，并返回详细结果。
@@ -168,29 +178,39 @@
 - write_engine.py (写入引擎)
     - 私有函数：
         - _is_dmg(path: str) -> bool
-            - 描述：判断给定路径是否为 dmg 镜像。
+            - 描述：判断给定路径是否为 dmg 镜像（基于扩展名）。
             - 输入参数：path 镜像文件路径（str）
             - 返回值：bool，True 表示 dmg，False 表示其它格式
+        - _get_image_size(src: str) -> Optional[int]
+            - 描述：获取镜像文件大小（字节），文件不存在或无法读取时返回 None。
+            - 输入参数：src 镜像文件路径（str）
+            - 返回值：int（字节数）或 None
         - _dd_write(src: str, dst: str, block_size: int = 1024*1024, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]
-            - 描述：使用 dd 命令将镜像写入目标设备，支持进度回调。
+            - 描述：使用 dd 命令将镜像写入目标设备，支持进度回调。通过 SIGINFO 信号轮询获取 macOS dd 进度（不使用 status=progress，macOS BSD dd 不支持）。
             - 输入参数：
                 - src: 源镜像路径（str）
                 - dst: 目标设备路径（str）
                 - block_size: 块大小（int，默认1MB）
                 - progress_callback: 进度回调函数（可选）
-            - 返回值：Dict，包含 ok/code/message/data 等字段
+            - 返回值：Dict，包含 ok/code/message/data 字段，data 含 image_size（字节）
         - _asr_restore(src: str, dst: str, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]
-            - 描述：使用 asr 恢复 dmg 镜像到目标设备，支持进度回调。
+            - 描述：使用 asr 恢复 dmg 镜像到目标设备，支持进度回调。默认开启写后校验（已移除 --noverify）。
             - 输入参数：
                 - src: 源镜像路径（str）
                 - dst: 目标设备路径（str）
                 - progress_callback: 进度回调函数（可选）
-            - 返回值：Dict，包含 ok/code/message/data 等字段
+            - 返回值：Dict，包含 ok/code/message/data 字段，data 含 image_size（字节）
     - 公共接口：
         - write_image_auto(src: str, dst: str, progress_callback: Optional[Callable[[float], None]] = None) -> Dict[str, Any]
-            - 描述：自动判断镜像类型（dmg 用 asr，其它用 dd）并写入目标设备，支持进度回调。
+            - 描述：自动判断镜像类型（dmg 用 asr，其它用 dd）并写入目标设备，支持进度回调。写入前校验 src 文件存在性及 dst 路径合法性。
             - 输入参数：
                 - src: 源镜像路径（str）
-                - dst: 目标设备路径（str）
+                - dst: 目标设备路径（str），须以 /dev/ 开头
                 - progress_callback: 进度回调函数（可选）
+            - 返回值：
+                - Dict[str, Any]:
+                    - ok: 是否写入成功（bool）
+                    - code: 状态码（str），如 'SUCCESS'、'DD_FAILED'、'ASR_FAILED'、'SRC_ERROR'、'DST_ERROR'
+                    - message: 说明信息（str）
+                    - data: 详细信息（dict，包含 src/dst/image_size，失败时含错误输出，成功时为 None）
             - 返回值：Dict，包含 ok/code/message/data 等字段
