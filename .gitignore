@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# macOS
+.DS_Store
+
+# Test cache
+.pytest_cache/
+
+# Resources (no large binaries in git)
+resources/test_iso/*.iso
+resources/test_iso/*.dmg
+resources/test_iso/*.img
+
+# Logs
+*.log

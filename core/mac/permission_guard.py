@@ -3,12 +3,14 @@ import os
 import errno
 import logging
 import stat
+import subprocess
 
 logger = logging.getLogger(__name__)
 
 def check_device_writable(device: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]:
     """
     检查设备是否可写，并返回详细结果。
+    若设备已挂载（EBUSY），自动尝试卸载后重新探测。
     输入参数：
         - device: 设备信息字典，需包含 device（路径）和 id 字段
     返回值：
@@ -19,7 +21,26 @@ def check_device_writable(device: Dict[str, Any]) -> Tuple[bool, Dict[str, Any]]
     dev_path = device.get("device")
     if not dev_path:
         return False, {"id": device.get("id"), "device": dev_path, "writable": False, "info": "无设备路径"}
+
     writable, reason = _check_writable(dev_path)
+
+    # 设备被占用时，尝试自动卸载后重新探测
+    if not writable and reason == "设备被占用（可能已挂载或被其他进程占用）":
+        logger.info("设备 %s 已挂载，尝试自动卸载...", dev_path)
+        try:
+            result = subprocess.run(
+                ["diskutil", "unmountDisk", dev_path],
+                capture_output=True,
+                timeout=30,
+            )
+            if result.returncode == 0:
+                writable, reason = _check_writable(dev_path)
+            else:
+                reason = "卸载失败：" + result.stderr.decode("utf-8", errors="replace").strip()
+        except Exception as e:
+            logger.error("自动卸载异常: %s", e)
+            reason = "自动卸载失败"
+
     info = "可写" if writable else f"不可写（{reason}）"
     return writable, {"id": device.get("id"), "device": dev_path, "writable": writable, "info": info}
 

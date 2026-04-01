@@ -4,6 +4,8 @@ from core.mac.permission_guard import check_device_writable
 import core.mac.disk_ops as disk_ops
 from core.mac.image_utils import check_image
 from core.mac.write_engine import write_image_auto
+from core.mac.verify import verify_write_result, verify_capacity, verify_partition_exists, verify_required_files
+from core.mac.recovery import get_recovery_suggestions, attempt_remount, attempt_repartition
 
 def check_image_file(path: str) -> Dict[str, Any]:
     """
@@ -109,6 +111,102 @@ def write_image(src: str, dst: str, progress_callback: Optional[Callable[[float]
             - data: 详细信息（dict，包含 src/dst/image_size，失败时含错误输出）
     """
     return write_image_auto(src, dst, progress_callback=progress_callback)
+
+
+# === 写后校验接口 ===
+
+def verify_result(
+    device_path: str,
+    image_size_bytes: int,
+    mount_point: Optional[str] = None,
+    os_type: str = "windows",
+) -> Dict[str, Any]:
+    """
+    写后综合校验：容量、分区存在性、必要引导文件（可选）。
+    输入参数：
+        - device_path: 目标设备路径（str），如 "/dev/disk2"
+        - image_size_bytes: 镜像文件大小（int，字节）
+        - mount_point: 挂载点路径（str，可选），提供时执行文件校验
+        - os_type: 系统类型（str），支持 "windows"、"linux"、"macos"，默认 "windows"
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+            - data: 各步骤校验结果 dict
+    """
+    return verify_write_result(device_path, image_size_bytes, mount_point, os_type)
+
+
+def verify_device_capacity(device_path: str, image_size_bytes: int) -> Dict[str, Any]:
+    """
+    单独校验目标设备容量是否不小于镜像大小。
+    输入参数：
+        - device_path: 目标设备路径（str），如 "/dev/disk2"
+        - image_size_bytes: 镜像文件大小（int，字节）
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+    """
+    return verify_capacity(device_path, image_size_bytes)
+
+
+def verify_device_partition(device_path: str) -> Dict[str, Any]:
+    """
+    单独校验目标设备写入后是否存在至少一个可识别分区。
+    输入参数：
+        - device_path: 目标设备路径（str），如 "/dev/disk2"
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+    """
+    return verify_partition_exists(device_path)
+
+
+def verify_boot_files(mount_point: str, os_type: str = "windows") -> Dict[str, Any]:
+    """
+    校验挂载点下是否存在指定系统类型的必要引导文件。
+    输入参数：
+        - mount_point: 设备挂载点路径（str），如 "/Volumes/EFI"
+        - os_type: 系统类型（str），支持 "windows"、"linux"、"macos"，默认 "windows"
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+    """
+    return verify_required_files(mount_point, os_type)
+
+
+# === 恢复接口 ===
+
+def get_suggestions(error_code: str) -> Dict[str, Any]:
+    """
+    根据错误码返回用户可读的修复建议，不执行任何实际操作。
+    输入参数：
+        - error_code: 错误码（str），如 'DD_FAILED'、'UNMOUNT_FAILED'
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+            - data.suggestions: 修复建议列表（List[str]）
+    """
+    return get_recovery_suggestions(error_code)
+
+
+def remount_device(device_path: str) -> Dict[str, Any]:
+    """
+    尝试重新挂载设备（写入失败后的轻量恢复）。
+    输入参数：
+        - device_path: 设备路径（str），如 "/dev/disk2"
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+    """
+    return attempt_remount(device_path)
+
+
+def repartition_device(device_path: str, fs_type: str = "exFAT", name: str = "Untitled") -> Dict[str, Any]:
+    """
+    对设备执行整盘抹除并重新分区（不可逆，调用前需用户确认）。
+    输入参数：
+        - device_path: 设备路径（str），如 "/dev/disk2"
+        - fs_type: 文件系统类型（str），默认 "exFAT"
+        - name: 卷标名（str），默认 "Untitled"
+    返回值：
+        - Dict[str, Any]: {ok, code, message, data}
+    """
+    return attempt_repartition(device_path, fs_type, name)
+
 
 if __name__ == "__main__":
     # 获取所有可用设备
