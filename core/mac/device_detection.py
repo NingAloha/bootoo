@@ -56,7 +56,8 @@ def _scan_devices() -> List[Dict[str, Any]]:
             "removable": removable,
             "mounted": mounted,
             "volumes": volumes,
-            "is_system_risk": is_system_risk
+            "is_system_risk": is_system_risk,
+            "content": content,  # BUG FIX: 原先未将 content 存入设备字典，导致 _validate_target 中 forbidden_content 过滤永远无效
         })
 
     return devices
@@ -74,6 +75,9 @@ def _validate_target(device: Dict[str, Any]) -> bool:
     }
     if not device:
         return False
+    # BUG FIX: 原代码使用 device.get("content", "")（小写），但字典中实际存储的键为 "content"（已在 _scan_devices 修复补充）
+    # 原有问题代码（已保留作参考）：
+    # content = device.get("content", "")
     content = device.get("content", "")
     if device.get("internal"):
         return False
