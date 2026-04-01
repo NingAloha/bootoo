@@ -2,19 +2,99 @@
 
 适用于 Apple Silicon Mac 的启动盘制作工具。专注 M 系列芯片，把设备检测、写盘流程、引导兼容、错误恢复做到稳定易用。
 
----
-
-## 项目背景
-
-Mac 平台缺乏一个真正简单易用的启动盘制作工具。Rufus 仅限 Windows，Etcher 对 Windows/Linux 系统盘支持不完善，Boot Camp 早已不支持 M 系列芯片。bootoo 由此而来，专注 Apple Silicon，不分散到其他平台。
+> 当前范围：仅支持 M 系列芯片（Apple Silicon）Mac，不包含 Intel Mac 及 Windows/Linux 本地运行版本。
 
 ---
 
-## 当前范围（Scope）
+## 下载与安装
 
-- 仅支持 M 系列芯片（Apple Silicon）Mac
-- 不包含 Intel Mac 支持
-- 不包含 Windows/Linux 本地运行版本
+1. 前往 [Releases](../../releases) 页面，下载最新版 `bootoo-vX.X.X-arm64-macos.zip`
+2. 解压：
+
+```bash
+unzip bootoo-vX.X.X-arm64-macos.zip
+```
+
+3. 赋予执行权限：
+
+```bash
+chmod +x bootoo
+```
+
+4. 可选：移动到 PATH 以便全局使用：
+
+```bash
+sudo mv bootoo /usr/local/bin/bootoo
+```
+
+无需安装 Python，开箱即用。
+
+---
+
+## 使用方式
+
+### 扫描设备
+
+```bash
+# 列出可用外置设备
+./bootoo scan
+
+# 列出所有设备（含系统盘和内置盘）
+./bootoo scan --all
+```
+
+### 写入镜像
+
+**写入操作需要 sudo 权限，否则会提示权限不足。**
+
+```bash
+sudo ./bootoo write ~/Downloads/ubuntu.iso /dev/disk2
+```
+
+流程说明：
+1. 自动校验镜像格式与大小
+2. 确认目标设备在可用列表中
+3. 提示确认（输入 `yes` 继续，避免误操作）
+4. 自动卸载设备
+5. 写入并显示进度条
+6. 写入完成或失败时给出提示
+
+支持格式：`.iso` / `.img`（使用 dd）、`.dmg`（使用 asr）
+
+### 写后校验
+
+```bash
+# 获取镜像字节数
+stat -f%z ~/Downloads/ubuntu.iso
+
+# 基础校验（容量 + 分区）
+./bootoo verify /dev/disk2 <镜像字节数>
+
+# 完整校验（含引导文件，需提供挂载点）
+./bootoo verify /dev/disk2 <镜像字节数> /Volumes/USB linux
+# os_type 支持：windows / linux / macos（默认 windows）
+```
+
+### 查看帮助
+
+```bash
+./bootoo help
+```
+
+---
+
+## 典型完整流程
+
+```bash
+# 1. 确认设备路径
+./bootoo scan
+
+# 2. 写入（需 sudo）
+sudo ./bootoo write ~/Downloads/ubuntu-24.04-desktop-amd64.iso /dev/disk2
+
+# 3. 写后校验
+./bootoo verify /dev/disk2 $(stat -f%z ~/Downloads/ubuntu-24.04-desktop-amd64.iso)
+```
 
 ---
 
@@ -25,7 +105,7 @@ bootoo/
 ├── core/
 │   ├── mac/                    # Apple Silicon 核心实现
 │   │   ├── device_detection.py     # 设备扫描与筛选
-│   │   ├── permission_guard.py     # 权限与可写性检查
+│   │   ├── permission_guard.py     # 权限与可写性检查（自动卸载）
 │   │   ├── image_utils.py          # 镜像校验（格式/大小/SHA256）
 │   │   ├── disk_ops.py             # 卸载、格式化、磁盘信息查询
 │   │   ├── write_engine.py         # 写入引擎（dd/asr，进度回调）
@@ -34,112 +114,43 @@ bootoo/
 │   │   ├── log.py                  # 统一日志入口
 │   │   └── errors.py               # 统一错误类型与错误码
 │   ├── api/
-│   │   ├── bootoo_api.py           # 对外稳定接口层
-│   │   ├── contracts.py            # 进度回调协议（待实现）
-│   │   └── models.py               # 请求/响应数据结构（待实现）
-│   └── config/
-│       ├── default.yaml            # 默认参数（待填充）
-│       ├── device_rules.yaml       # 设备过滤规则（待填充）
-│       └── image_rules.yaml        # 镜像类型白名单（待填充）
-├── ui/                         # GUI（待开发）
+│   │   └── bootoo_api.py           # 对外稳定接口层
+│   └── config/                 # 运行配置（待填充）
+├── dist/
+│   ├── bin/                    # 可执行文件
+│   └── release/                # 发布归档
 ├── scripts/mac/                # 开发期调试脚本
-├── docs/                       # 架构、开发、兼容性文档
-├── resources/test_iso/         # 测试镜像（勿提交大文件）
-└── tests/mac/apple_silicon/    # 单元测试与集成测试
+├── tests/mac/apple_silicon/    # 单元测试
+└── docs/                       # 架构与开发文档
 ```
 
 ---
 
-## 核心流程
-
-```
-设备扫描 → 权限检查 → 镜像校验 → 卸载 → 写入 → 写后校验 → 成功收尾 / 失败恢复
-```
-
----
-
-## core/mac 模块说明
-
-| 模块 | 状态 | 主要接口 |
-|------|------|----------|
-| `device_detection.py` | ✅ 完成 | `list_all_devices()`, `list_available_devices(min_size_bytes)` |
-| `permission_guard.py` | ✅ 完成 | `check_device_writable(device)` |
-| `image_utils.py` | ✅ 完成 | `check_image(path)` |
-| `disk_ops.py` | ✅ 完成 | `unmount_device()`, `format_disk()`, `get_disk_info()` |
-| `write_engine.py` | ✅ 完成 | `write_image_auto(src, dst, progress_callback)` |
-| `verify.py` | ✅ 完成 | `verify_write_result()`, `verify_capacity()`, `verify_partition_exists()`, `verify_required_files()` |
-| `recovery.py` | ✅ 完成 | `get_recovery_suggestions()`, `attempt_remount()`, `attempt_repartition()` |
-| `log.py` | ✅ 完成 | `setup_logging()`, `get_logger(name)` |
-| `errors.py` | ✅ 完成 | 错误码常量 + 异常类（`BootooError` 及子类） |
-
----
-
-## core/api 接口说明
+## 开发者接口
 
 所有接口返回统一结构：`{"ok": bool, "code": str, "message": str, "data": dict | None}`
 
-| 接口 | 说明 |
-|------|------|
-| `check_image_file(path)` | 镜像存在性、格式、大小、SHA256 |
-| `get_all_devices()` | 获取所有磁盘（含系统盘） |
-| `get_available_devices(min_size_bytes)` | 获取可写入的外置设备 |
-| `check_selected_device_writable(device)` | 检查设备可写性 |
-| `unmount_device(device_path)` | 卸载磁盘或分区 |
-| `format_disk(partition_path, fs_type, name)` | 格式化分区 |
-| `get_disk_info(path)` | 查询磁盘/分区信息 |
-| `write_image(src, dst, progress_callback)` | 写入镜像（自动选 dd/asr） |
-| `verify_result(device_path, image_size_bytes, mount_point, os_type)` | 写后综合校验 |
-| `verify_device_capacity(device_path, image_size_bytes)` | 单独容量校验 |
-| `verify_device_partition(device_path)` | 单独分区存在性校验 |
-| `verify_boot_files(mount_point, os_type)` | 引导文件校验 |
-| `get_suggestions(error_code)` | 根据错误码获取修复建议 |
-| `remount_device(device_path)` | 尝试重新挂载设备 |
-| `repartition_device(device_path, fs_type, name)` | 整盘抹除并重新分区（不可逆） |
+支持 `--json` 输出模式，便于 GUI 或脚本集成：
 
----
+```bash
+./bootoo scan --json
+sudo ./bootoo write ~/Downloads/ubuntu.iso /dev/disk2 --json
+./bootoo verify /dev/disk2 3276800000 --json
+```
 
-## 快速开始
+Python API 示例：
 
 ```python
-from core.api.bootoo_api import (
-    get_available_devices,
-    check_image_file,
-    write_image,
-    verify_result,
-    get_suggestions,
-)
+from core.api.bootoo_api import get_available_devices, write_image, verify_result
 
-# 1. 扫描可用设备
 devices = get_available_devices()
-
-# 2. 校验镜像
-img = check_image_file("~/Downloads/ubuntu.iso")
-
-# 3. 写入（需 sudo）
-result = write_image(
-    src="~/Downloads/ubuntu.iso",
-    dst="/dev/disk2",
-    progress_callback=lambda p: print(f"{p:.1f}%"),
-)
-
-# 4. 写后校验
+result  = write_image("~/Downloads/ubuntu.iso", "/dev/disk2",
+                      progress_callback=lambda p: print(f"{p:.1f}%"))
 if result["ok"]:
-    verify_result("/dev/disk2", img["data"]["size"])
-else:
-    print(get_suggestions(result["code"])["data"]["suggestions"])
+    verify_result("/dev/disk2", 3276800000)
 ```
 
----
-
-## 日志配置
-
-```python
-from core.mac.log import setup_logging
-import logging
-
-# 程序入口处调用一次
-setup_logging(level=logging.INFO, log_file="bootoo.log")
-```
+详细接口文档见 [core/api/README.md](core/api/README.md)，模块文档见 [core/mac/README.md](core/mac/README.md)。
 
 ---
 
@@ -147,24 +158,20 @@ setup_logging(level=logging.INFO, log_file="bootoo.log")
 
 | 错误码 | 含义 |
 |--------|------|
-| `DEVICE_SCAN_FAILED` | 设备扫描失败 |
-| `PERMISSION_DENIED` | 权限不足 |
-| `DEVICE_BUSY` | 设备正忙 |
+| `PERMISSION_DENIED` | 权限不足，请用 sudo 运行 |
+| `DEVICE_BUSY` | 设备正忙（已自动尝试卸载） |
 | `IMAGE_NOT_FOUND` | 镜像文件不存在 |
 | `IMAGE_FORMAT_INVALID` | 镜像格式不支持 |
 | `UNMOUNT_FAILED` | 卸载失败 |
-| `FORMAT_FAILED` | 格式化失败 |
 | `DD_FAILED` | dd 写入失败 |
 | `ASR_FAILED` | asr 写入失败 |
-| `VERIFY_CAPACITY_FAIL` | 容量校验失败 |
-| `VERIFY_PARTITION_FAIL` | 分区校验失败 |
-| `VERIFY_FILES_FAIL` | 引导文件校验失败 |
+| `VERIFY_CAPACITY_FAIL` | 设备容量不足 |
+| `VERIFY_PARTITION_FAIL` | 写入后未检测到分区 |
+| `VERIFY_FILES_FAIL` | 引导文件缺失 |
 | `RECOVERY_FAILED` | 恢复操作失败 |
 
 ---
 
-## 多语言集成与分支说明
+## 分支说明
 
-核心功能以 Python 为主，底层性能或系统相关模块可用 C/C++/Swift 实现，通过统一 API 层集成。当前分支（Apple Silicon Mac 版）由 **NingAloha** 全权负责。
-
-如需协作、贡献新平台支持或有多语言集成相关建议，欢迎通过 Issue 或 PR 交流。
+当前分支（`apple_silicon`）由 **NingAloha** 全权负责，专注 M 系列芯片 Mac。如需协作或贡献新平台支持，欢迎通过 Issue 或 PR 交流。
