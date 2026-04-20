@@ -19,6 +19,9 @@
   - `Device`
   - `DevicePartition`
   - `DeviceSnapshot`
+  - `DeviceBusKind`
+  - `FilesystemKind`
+  - `PartitionTableKind`
 - `artifact.py`
   - `ImageArtifact`
   - `ArtifactKind`
@@ -45,6 +48,18 @@
 - 这里定义“是什么”，不定义“怎么做”
 - 类型应该稳定，尽量少依赖外部命令输出结构
 - 字段要服务于 planner 和 executor，不服务于某个 CLI 展示
+
+## 当前进展
+
+- `device.py` 已完成第一版最小设备模型
+- 当前设备模型已覆盖：
+  - 设备总线类型
+  - 分区表类型
+  - 文件系统类型
+  - 内置 / 外置 / 虚拟 / 只读 / 系统高风险等基础语义
+  - 设备快照与分区挂载状态
+- 这套模型当前主要服务于 `core/platform/mac/device_probe.py` 的 `diskutil` 输出归一化
+- 下一步应继续补 `artifact.py`、`plan.py`，避免 planner 重新退回裸 dict
 
 ## 例子
 

@@ -33,7 +33,9 @@ bootoo/
 
 - 旧实现代码已经按新骨架清空
 - 旧 `core/mac` 占位目录已经移除，当前只保留新架构骨架
-- `core/platform/mac/` 已创建第一批占位适配器文件，但尚未补齐真实逻辑
+- `core/domain/device.py` 已落第一版设备模型，开始承接稳定设备语义
+- `core/platform/mac/device_probe.py` 已能基于 `diskutil list/info -plist` 做只读归一化探测
+- `tests/platform/mac/` 已有首批针对 `diskutil` plist 解析的测试
 - 新开发应优先落在 `cli/`、`core/domain/`、`core/planner/`、`core/executor/`、`core/platform/mac/`
 
 ## 下一步
@@ -48,3 +50,7 @@ bootoo/
 - [core/platform/mac/device_probe.py](core/platform/mac/device_probe.py)
 - [core/api/bootoo_api.py](core/api/bootoo_api.py)
 - [cli/app.py](cli/app.py)
+
+当前建议优先继续：
+- 用真实外置 U 盘样本继续校准 `device_probe.py`
+- 补 `core/domain/artifact.py`，让 planner 有完整输入模型

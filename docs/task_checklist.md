@@ -10,6 +10,9 @@
 - [x] 第一批占位文件已存在：`cli/app.py`、`core/api/bootoo_api.py`、`core/domain/*.py`、`core/planner/*.py`、`core/executor/*.py`
 - [x] `core/platform/mac/*.py` 占位适配器文件已建立
 - [x] 文档已明确新分层职责：见根目录与各层 `README.md`
+- [x] `core/domain/device.py` 已完成第一版设备领域模型
+- [x] `core/platform/mac/device_probe.py` 已实现基于 `diskutil list/info -plist` 的最小只读探测
+- [x] `tests/platform/mac/test_device_probe.py` 已覆盖首批 plist 解析场景
 - [ ] 各层真实类型、规则、执行逻辑仍待补齐
 - [ ] CLI 命令仍是占位，尚未连通 planner / executor / platform
 - [ ] `tests/mac/apple_silicon/` 仍有历史占位测试，尚未迁移到新分层测试目录
@@ -28,7 +31,8 @@
 - [ ] 补齐基础开发配置：格式化、lint、pytest、最小 CI
 
 ## 阶段 1：domain 落型
-- [ ] 在 `core/domain/device.py` 完成 `Device`、`DevicePartition`、`DeviceSnapshot`
+- [x] 在 `core/domain/device.py` 完成 `Device`、`DevicePartition`、`DeviceSnapshot`
+- [x] 在 `core/domain/device.py` 补充设备总线、文件系统、分区表等基础枚举
 - [ ] 在 `core/domain/artifact.py` 完成镜像资源模型、资源类型、能力描述
 - [ ] 在 `core/domain/layout.py` 完成分区布局、分区规格、文件系统枚举
 - [ ] 在 `core/domain/boot.py` 完成启动方案模型与模式枚举
@@ -46,13 +50,15 @@
 - [ ] 明确 planner 输出的步骤意图、前置条件、风险等级、可选回滚点
 
 ## 阶段 3：platform/mac 适配层
-- [ ] 在 `device_probe.py` 中封装 `diskutil list/info` 与只读设备探测
+- [x] 在 `device_probe.py` 中封装 `diskutil list/info` 与最小只读设备探测
+- [x] 在 `device_probe.py` 中接入 APFS volume 的基础归一化处理
+- [x] 在 `command_runner.py` 中统一命令执行、超时、输出、错误包装
+- [ ] 用真实外置 U 盘样本继续校准 `device_probe.py` 的字段映射与候选盘判断
 - [ ] 在 `disk_adapter.py` 中封装卸载、抹盘、分区、格式化
 - [ ] 在 `image_adapter.py` 中封装镜像探测、文件类型与元信息读取
 - [ ] 在 `restore_adapter.py` 中封装 `dd` / `asr` 的调用与进度采集
 - [ ] 在 `mount_adapter.py` 中处理挂载、重新挂载、挂载点解析
 - [ ] 在 `verify_adapter.py` 中处理写后只读校验
-- [ ] 在 `command_runner.py` 中统一命令执行、超时、输出、错误包装
 - [ ] 明确 Apple Silicon 范围内的设备识别边界，避免误判系统盘和内置盘
 
 ## 阶段 4：executor 执行链路
@@ -78,7 +84,8 @@
 - [ ] `tests/domain/` 覆盖领域对象约束、序列化、错误对象
 - [ ] `tests/planner/` 覆盖模式选择、风险拦截、步骤生成顺序
 - [ ] `tests/executor/` 覆盖执行顺序、失败停止点、回滚差异、统一结果
-- [ ] 在 `tests/platform/mac/` 中覆盖平台适配器的命令封装与错误映射
+- [x] 在 `tests/platform/mac/` 中建立首批 `diskutil` plist 归一化测试
+- [ ] 在 `tests/platform/mac/` 中继续覆盖平台适配器的命令封装与错误映射
 - [ ] 迁移或清理 `tests/mac/apple_silicon/` 下的历史占位测试
 - [ ] 为真实磁盘流程提供 dry-run / stub / fake adapter 测试路径
 - [ ] 覆盖设备热插拔、权限不足、卸载失败、镜像不兼容等异常路径

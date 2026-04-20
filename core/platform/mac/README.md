@@ -43,4 +43,17 @@
 - `verify_adapter.py`
 - `command_runner.py`
 
+当前已落的最小能力：
+- `command_runner.py`
+  - 提供统一命令执行结果与失败包装
+- `device_probe.py`
+  - 已能调用 `diskutil list -plist` 与 `diskutil info -plist`
+  - 已能把 whole disk、普通 partition、APFS volume 归一化到 `core.domain.device`
+  - 当前以只读探测为主，不执行任何破坏性操作
+
+当前已确认的探测事实：
+- `diskutil list -plist` 中 whole disk 可能同时包含 `Partitions` 和 `APFSVolumes`
+- APFS container 上真正挂载的系统卷信息需要从 `APFSVolumes` 中读取
+- `device_probe.py` 当前已据此处理系统卷和 `/System/Volumes/*` 风险挂载点
+
 后续 macOS 相关能力直接落在这里，不再通过旧目录过渡。
