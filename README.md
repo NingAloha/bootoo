@@ -21,7 +21,6 @@ bootoo/
 │   ├── planner/         # 方案规划
 │   ├── executor/        # 计划执行
 │   ├── platform/mac/    # macOS 平台适配器
-│   ├── mac/             # 已清空的旧实现占位区
 │   └── config/          # 配置骨架
 ├── tests/               # 分层测试骨架
 └── docs/                # 架构与迁移说明
@@ -30,7 +29,7 @@ bootoo/
 ## 说明
 
 - 旧实现代码已经按新骨架清空
-- 旧 `core/mac` 目录暂时保留，只作为兼容占位与迁移提示
+- 旧 `core/mac` 占位目录已经移除，当前只保留新架构骨架
 - 新开发应优先落在 `cli/`、`core/domain/`、`core/planner/`、`core/executor/`、`core/platform/mac/`
 
 ## 下一步

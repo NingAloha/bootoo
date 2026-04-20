@@ -13,7 +13,6 @@ bootoo/
 │   ├── executor/
 │   ├── platform/
 │   │   └── mac/
-│   ├── mac/
 │   └── config/
 ├── tests/
 │   ├── domain/
@@ -39,13 +38,12 @@ bootoo/
 
 ## 迁移原则
 
-1. 旧 `core/mac` 继续可用，不一次性删除
-2. 新功能优先写入新架构目录
-3. 平台命令实现逐步下沉到 `core/platform/mac`
-4. CLI/API 最终改为依赖 planner/executor
+1. 新功能优先写入新架构目录
+2. 平台命令实现直接落在 `core/platform/mac`
+3. CLI/API 最终改为依赖 planner/executor
 
 ## 下一阶段建议
 
 1. 先在 `core/domain` 中落第一批类型
 2. 再定义 `planner` 请求和 `ExecutionPlan`
-3. 然后把旧 `device_detection` 的只读能力迁到 `platform/mac`
+3. 然后在 `platform/mac` 中补齐只读探测与执行适配能力

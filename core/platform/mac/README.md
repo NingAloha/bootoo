@@ -30,13 +30,8 @@
 - `command_runner.py`
   - 命令执行器，统一超时、输出采集、错误包装
 
-## 与旧目录的关系
+## 当前状态
 
-当前已有的这些文件会逐步迁入这里或被这里吸收：
-- `core/mac/device_detection.py`
-- `core/mac/disk_ops.py`
-- `core/mac/image_utils.py`
-- `core/mac/write_engine.py`
-- `core/mac/verify.py`
+旧的 `core/mac` 占位目录已经移除。
 
-短期内不会一次性移动，避免把现有可运行链路打断。
+后续 macOS 相关能力直接落在这里，不再通过旧目录过渡。
