@@ -39,12 +39,12 @@ bootoo/
 ## 下一步
 
 建议按这个顺序补齐最小闭环：
-- [core/domain/device.py](/Users/ningaloha/Documents/Repository/bootoo/core/domain/device.py)
-- [core/domain/artifact.py](/Users/ningaloha/Documents/Repository/bootoo/core/domain/artifact.py)
-- [core/domain/layout.py](/Users/ningaloha/Documents/Repository/bootoo/core/domain/layout.py)
-- [core/domain/plan.py](/Users/ningaloha/Documents/Repository/bootoo/core/domain/plan.py)
-- [core/planner/request_parser.py](/Users/ningaloha/Documents/Repository/bootoo/core/planner/request_parser.py)
-- [core/planner/plan_builder.py](/Users/ningaloha/Documents/Repository/bootoo/core/planner/plan_builder.py)
-- [core/platform/mac/device_probe.py](/Users/ningaloha/Documents/Repository/bootoo/core/platform/mac/device_probe.py)
-- [core/api/bootoo_api.py](/Users/ningaloha/Documents/Repository/bootoo/core/api/bootoo_api.py)
-- [cli/app.py](/Users/ningaloha/Documents/Repository/bootoo/cli/app.py)
+- [core/domain/device.py](core/domain/device.py)
+- [core/domain/artifact.py](core/domain/artifact.py)
+- [core/domain/layout.py](core/domain/layout.py)
+- [core/domain/plan.py](core/domain/plan.py)
+- [core/planner/request_parser.py](core/planner/request_parser.py)
+- [core/planner/plan_builder.py](core/planner/plan_builder.py)
+- [core/platform/mac/device_probe.py](core/platform/mac/device_probe.py)
+- [core/api/bootoo_api.py](core/api/bootoo_api.py)
+- [cli/app.py](cli/app.py)
