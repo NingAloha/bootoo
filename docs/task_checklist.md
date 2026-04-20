@@ -1,58 +1,103 @@
-# bootoo 任务清单（M 芯片 Mac 版）
+# bootoo 任务清单（按当前重构状态修订）
 
-## 目标与原则
-- 目标：先做出可用的 MVP，支持在 M 芯片 Mac 上稳定制作系统启动盘。
-- 技术策略：core 先用 Python 快速实现，后续按瓶颈引入 C/C++。
-- 边界：仅支持 Apple Silicon，不覆盖 Intel Mac，不做 Windows/Linux 本地客户端。
+## 对齐结论
+- 当前仓库已经从旧写盘实现切到“新架构骨架 + 占位模块”阶段，不适合再用“先补 scan/validate/write/verify 的传统写盘 MVP”作为主线。
+- 当前更合理的推进顺序应是：先补 `domain -> planner -> executor -> platform/mac -> api/cli` 的最小闭环，再接真实写盘与校验能力。
+- 本清单已按仓库现状修订，保留写盘目标，但把任务拆到新架构职责下。
 
-## 阶段 0：项目基建（1-2 天）
-- [ ] 明确 Python 版本与依赖管理方案（建议 Python 3.11 + venv）。
-- [ ] 新建最小工程文件：`pyproject.toml`、`.gitignore`、`core/requirements.txt`（如需）。
-- [ ] 统一日志规范（JSON 行日志或文本日志二选一）。
-- [ ] 统一错误码规范（用户可读错误 + 机器可判定错误码）。
+## 当前现状
+- [x] 目录骨架已建立：`cli/`、`core/api/`、`core/domain/`、`core/planner/`、`core/executor/`、`core/platform/`、`tests/`
+- [x] 第一批占位文件已存在：`cli/app.py`、`core/api/bootoo_api.py`、`core/domain/*.py`、`core/planner/*.py`、`core/executor/*.py`
+- [x] 文档已明确新分层职责：见根目录与各层 `README.md`
+- [ ] 各层真实类型、规则、执行逻辑仍待补齐
+- [ ] `core/platform/mac/` 目前只有 README，尚未落具体适配器代码
+- [ ] CLI 命令仍是占位，尚未连通 planner / executor / platform
 
-## 阶段 1：core MVP（优先，5-10 天）
-- [ ] 设备识别：识别可移动盘、容量、设备路径、挂载状态。
-- [ ] 设备检测边界：当前仅支持 Apple Silicon（M 芯片 Mac），如需适配 Intel Mac/其他平台需单独开发。
-- [ ] 安全检查：系统版本检查、权限检查、磁盘占用检查。
-- [ ] 权限与异常处理：所有磁盘操作异常、卸载失败、权限不足等建议统一在 `core/platform/mac` 或共享错误模块中处理。
-- [ ] 镜像检查：ISO/IMG 存在性、大小、Hash 校验（可选）。
-- [ ] 写盘流程：卸载 -> 抹盘 -> 写入 -> 同步 -> 结果校验。
-- [ ] 流程回滚：失败后尽量恢复到可识别状态并输出修复建议。
-- [ ] 任务状态：支持进度回调（准备中、写入中、校验中、完成/失败）。
+## 目标与边界
+- 目标：先完成 Apple Silicon macOS 下的最小可执行闭环，再逐步补强真实写盘能力。
+- 产品形态：当前以纯 CLI 为主，终端交互接近 GUI。
+- 核心模型：从“直接整盘写镜像”升级为“介质方案 -> 执行计划 -> 平台执行”。
+- 平台边界：当前只支持 macOS + Apple Silicon，不覆盖 Intel Mac，不做 Windows/Linux 本地客户端。
 
-## 阶段 2：脚本与可调用接口（2-4 天）
-- [ ] 提供 CLI 命令：`scan`、`validate`、`write`、`verify`。
-- [ ] scripts/mac 增加一键入口脚本（面向本地调试）。
-- [ ] core/api 提供稳定接口（供未来 GUI 调用）。
+## 阶段 0：工程基线补齐
+- [ ] 明确 Python 版本与依赖管理方案，并写入 `pyproject.toml`
+- [ ] 梳理入口与运行方式：`bootoo.py`、`cli/app.py`、脚本入口的职责边界
+- [ ] 统一日志格式与日志落点
+- [ ] 统一错误码、用户提示、内部异常包装规范
+- [ ] 补齐基础开发配置：格式化、lint、pytest、最小 CI
 
-## 阶段 3：测试与稳定性（持续）
-- [ ] 单元测试：命令拼接、参数校验、错误映射。
-- [ ] 集成测试：真实磁盘写入的干跑模式（mock/subprocess stub）。
-- [ ] 异常注入：中断、电源异常、磁盘拔出、权限失败。
-- [ ] 设备检测与写入前后需关注设备热插拔、状态变化，后续流程需再次校验设备唯一性和可用性。
-- [ ] 回归测试：不同 macOS 版本和不同品牌 U 盘。
-- [ ] 权限要求：建议运行本工具时即要求 sudo/root 权限，避免写盘阶段权限不足。
+## 阶段 1：domain 落型
+- [ ] 在 `core/domain/device.py` 完成 `Device`、`DevicePartition`、`DeviceSnapshot`
+- [ ] 在 `core/domain/artifact.py` 完成镜像资源模型、资源类型、能力描述
+- [ ] 在 `core/domain/layout.py` 完成分区布局、分区规格、文件系统枚举
+- [ ] 在 `core/domain/boot.py` 完成启动方案模型与模式枚举
+- [ ] 在 `core/domain/plan.py` 完成 `ExecutionPlan`、`PlanStep`、上下文与风险字段
+- [ ] 在 `core/domain/result.py`、`errors.py` 完成统一结果结构与领域错误
+- [ ] 明确哪些字段服务于 planner / executor，避免被 CLI 展示结构反向驱动
 
-## 阶段 4：UI 对接（后置）
-- [ ] UI 只做编排和展示，不做底层磁盘逻辑。
-- [ ] 对接核心状态流：开始、进度、取消、失败原因、恢复建议。
-- [ ] 日志导出与问题上报入口。
+## 阶段 2：planner 最小闭环
+- [ ] 在 `request_parser.py` 把 CLI/API 输入转成 planner 请求对象
+- [ ] 在 `capability_resolver.py` 识别 artifact 支持的模式与限制
+- [ ] 在 `layout_planner.py` 生成 `whole-disk` / `partitioned` 两类布局结果
+- [ ] 在 `boot_planner.py` 表达启动资产部署或整盘恢复方案
+- [ ] 在 `validation.py` 落执行前校验：设备安全性、容量、模式兼容性、平台边界
+- [ ] 在 `plan_builder.py` 输出真正可执行的 `ExecutionPlan`
+- [ ] 明确 planner 输出的步骤意图、前置条件、风险等级、可选回滚点
 
-## 近期执行顺序（建议）
-1. 先完成 core 的 `scan` 与 `validate`。
-2. 再完成 `write` 主流程（先不做高级优化）。
-3. 再补 `verify` 与失败恢复。
-4. 最后再接脚本和 UI。
+## 阶段 3：platform/mac 适配层
+- [ ] 新建 `device_probe.py`，封装 `diskutil list/info` 与只读设备探测
+- [ ] 新建 `disk_adapter.py`，封装卸载、抹盘、分区、格式化
+- [ ] 新建 `image_adapter.py`，封装镜像探测、文件类型与元信息读取
+- [ ] 新建 `restore_adapter.py`，封装 `dd` / `asr` 的调用与进度采集
+- [ ] 新建 `mount_adapter.py`，处理挂载、重新挂载、挂载点解析
+- [ ] 新建 `verify_adapter.py`，处理写后只读校验
+- [ ] 新建 `command_runner.py`，统一命令执行、超时、输出、错误包装
+- [ ] 明确 Apple Silicon 范围内的设备识别边界，避免误判系统盘和内置盘
 
-## 验收标准（MVP）
-- 能稳定识别目标 U 盘并防误选系统盘。
-- 能在常见 ISO/IMG 上完成写入并返回明确结果。
-- 失败时能给出可执行的下一步建议。
-- 核心流程具备基础测试覆盖（关键路径不少于 70%）。
+## 阶段 4：executor 执行链路
+- [ ] 在 `engine.py` 实现执行入口与阶段状态推进
+- [ ] 在 `step_runner.py` 实现统一步骤调度与上下文传递
+- [ ] 在 `disk_steps.py` 实现卸载、抹盘、分区、格式化步骤
+- [ ] 在 `artifact_steps.py` 实现镜像恢复、资源展开、文件复制步骤
+- [ ] 在 `boot_steps.py` 实现 EFI / 启动文件部署步骤
+- [ ] 在 `verify_steps.py` 实现写后校验步骤
+- [ ] 在 `rollback.py` 区分可回滚和不可回滚动作，并输出修复建议
+- [ ] 打通进度与状态回调：准备中、执行中、校验中、完成、失败
 
-## 设备检测与写盘相关注意事项（补充）
-- 设备检测能力已覆盖 Apple Silicon Mac 下的主流需求，后续如遇极端场景（如特殊硬件、只读盘、虚拟盘等）需补充加固。
-- 错误与异常建议集中在 `core/platform/mac` 或共享错误模块统一处理，便于维护和扩展。
-- 设备热插拔、状态漂移等需在写盘前后再次校验，防止幽灵设备写入。
-- 权限不足、卸载失败等需给出明确用户提示和操作建议。
+## 阶段 5：API 与 CLI 接线
+- [ ] 在 `core/api/contracts.py`、`models.py` 定义稳定输入输出模型
+- [ ] 在 `core/api/bootoo_api.py` 用 planner + executor 替换当前 skeleton 返回
+- [ ] 让 `cli/app.py` 成为真实入口，不再只是打印 skeleton 文案
+- [ ] 实现 `scan`、`plan`、`write`、`verify`、`doctor` 命令
+- [ ] 在 `cli/presenters/` 中建立核心结果到视图模型的映射
+- [ ] 在 `cli/views/` 中补终端展示组件与错误提示
+- [ ] 让 `scripts/mac/*.sh` 调用正式 CLI，而不是依赖临时行为
+
+## 阶段 6：测试与稳定性
+- [ ] `tests/domain/` 覆盖领域对象约束、序列化、错误对象
+- [ ] `tests/planner/` 覆盖模式选择、风险拦截、步骤生成顺序
+- [ ] `tests/executor/` 覆盖执行顺序、失败停止点、回滚差异、统一结果
+- [ ] 新建 `tests/platform/mac/`，覆盖平台适配器的命令封装与错误映射
+- [ ] 为真实磁盘流程提供 dry-run / stub / fake adapter 测试路径
+- [ ] 覆盖设备热插拔、权限不足、卸载失败、镜像不兼容等异常路径
+- [ ] 在不同 macOS 版本和不同 U 盘上做最小回归验证
+
+## 推荐实现顺序
+1. 先把 `core/domain` 的核心类型补完整。
+2. 再让 `planner` 能稳定生成 `ExecutionPlan`。
+3. 然后补 `core/platform/mac` 的只读探测和最小破坏性适配器。
+4. 再打通 `executor` 执行链路。
+5. 最后接 `api`、`cli`、脚本入口和测试。
+
+## MVP 验收标准
+- 能把一个明确的 artifact + target device 请求转成可审阅的 `ExecutionPlan`
+- 能在 Apple Silicon macOS 上稳定探测目标设备并防误选系统盘
+- 能完成至少一种最小写盘路径的端到端执行
+- 失败时能返回明确的阶段、原因和下一步建议
+- 关键路径具备基础自动化测试覆盖
+
+## 暂不作为当前主线的事项
+- [ ] Intel Mac 兼容
+- [ ] Windows / Linux 本地客户端
+- [ ] GUI 正式产品化
+- [ ] C/C++ 性能优化与底层重写
