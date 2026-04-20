@@ -1,0 +1,1 @@
+"""Mount adapter placeholder."""

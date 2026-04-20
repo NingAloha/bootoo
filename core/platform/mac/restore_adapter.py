@@ -1,0 +1,1 @@
+"""Restore adapter placeholder."""

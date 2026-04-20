@@ -1,0 +1,1 @@
+"""Layout planner placeholder."""
