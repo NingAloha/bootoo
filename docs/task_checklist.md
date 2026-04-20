@@ -8,10 +8,11 @@
 ## 当前现状
 - [x] 目录骨架已建立：`cli/`、`core/api/`、`core/domain/`、`core/planner/`、`core/executor/`、`core/platform/`、`tests/`
 - [x] 第一批占位文件已存在：`cli/app.py`、`core/api/bootoo_api.py`、`core/domain/*.py`、`core/planner/*.py`、`core/executor/*.py`
+- [x] `core/platform/mac/*.py` 占位适配器文件已建立
 - [x] 文档已明确新分层职责：见根目录与各层 `README.md`
 - [ ] 各层真实类型、规则、执行逻辑仍待补齐
-- [ ] `core/platform/mac/` 目前只有 README，尚未落具体适配器代码
 - [ ] CLI 命令仍是占位，尚未连通 planner / executor / platform
+- [ ] `tests/mac/apple_silicon/` 仍有历史占位测试，尚未迁移到新分层测试目录
 
 ## 目标与边界
 - 目标：先完成 Apple Silicon macOS 下的最小可执行闭环，再逐步补强真实写盘能力。
@@ -45,13 +46,13 @@
 - [ ] 明确 planner 输出的步骤意图、前置条件、风险等级、可选回滚点
 
 ## 阶段 3：platform/mac 适配层
-- [ ] 新建 `device_probe.py`，封装 `diskutil list/info` 与只读设备探测
-- [ ] 新建 `disk_adapter.py`，封装卸载、抹盘、分区、格式化
-- [ ] 新建 `image_adapter.py`，封装镜像探测、文件类型与元信息读取
-- [ ] 新建 `restore_adapter.py`，封装 `dd` / `asr` 的调用与进度采集
-- [ ] 新建 `mount_adapter.py`，处理挂载、重新挂载、挂载点解析
-- [ ] 新建 `verify_adapter.py`，处理写后只读校验
-- [ ] 新建 `command_runner.py`，统一命令执行、超时、输出、错误包装
+- [ ] 在 `device_probe.py` 中封装 `diskutil list/info` 与只读设备探测
+- [ ] 在 `disk_adapter.py` 中封装卸载、抹盘、分区、格式化
+- [ ] 在 `image_adapter.py` 中封装镜像探测、文件类型与元信息读取
+- [ ] 在 `restore_adapter.py` 中封装 `dd` / `asr` 的调用与进度采集
+- [ ] 在 `mount_adapter.py` 中处理挂载、重新挂载、挂载点解析
+- [ ] 在 `verify_adapter.py` 中处理写后只读校验
+- [ ] 在 `command_runner.py` 中统一命令执行、超时、输出、错误包装
 - [ ] 明确 Apple Silicon 范围内的设备识别边界，避免误判系统盘和内置盘
 
 ## 阶段 4：executor 执行链路
@@ -77,7 +78,8 @@
 - [ ] `tests/domain/` 覆盖领域对象约束、序列化、错误对象
 - [ ] `tests/planner/` 覆盖模式选择、风险拦截、步骤生成顺序
 - [ ] `tests/executor/` 覆盖执行顺序、失败停止点、回滚差异、统一结果
-- [ ] 新建 `tests/platform/mac/`，覆盖平台适配器的命令封装与错误映射
+- [ ] 在 `tests/platform/mac/` 中覆盖平台适配器的命令封装与错误映射
+- [ ] 迁移或清理 `tests/mac/apple_silicon/` 下的历史占位测试
 - [ ] 为真实磁盘流程提供 dry-run / stub / fake adapter 测试路径
 - [ ] 覆盖设备热插拔、权限不足、卸载失败、镜像不兼容等异常路径
 - [ ] 在不同 macOS 版本和不同 U 盘上做最小回归验证

@@ -1,83 +1,42 @@
-# Bug 修复记录：`_validate_target` 中 `forbidden_content` 过滤永远无效
+# 历史问题归档：设备 `content` 元数据缺失导致风险过滤失效
 
-## 问题描述
+## 说明
 
-`core/mac/device_detection.py` 中，`_validate_target` 函数负责校验设备是否为可用目标盘，其中包含一段 `forbidden_content` 过滤逻辑，用于拦截 APFS、HFS+ 等 macOS 系统文件系统类型的设备，防止误写入系统盘或重要分区。
+这份记录对应的是**重构前旧实现**中的一个设备识别缺陷，原始文件路径和函数名已经不属于当前新架构的正式代码路径。
 
-然而，该过滤逻辑**从未生效**，任何设备的 `content` 字段都会被当作空字符串处理，导致 APFS 容器盘等高风险设备可能通过校验。
+保留这份文档的目的，不是继续指向旧代码修补，而是把这类问题沉淀成新架构下的约束要求，避免在 `domain -> planner -> platform/mac` 重建过程中再次出现。
 
----
+## 历史问题摘要
 
-## 根本原因
+旧实现里，设备扫描阶段虽然读取到了磁盘的 `content` 信息，但没有把该字段写入最终设备对象，导致后续风险过滤无法基于 `content` 判定 APFS、HFS+ 等高风险目标。
 
-**`_scan_devices` 函数在构建设备字典时，遗漏了 `"content"` 字段的写入。**
+结果是：
+- 设备列表里可能混入不应作为写盘目标的系统相关磁盘
+- 风险过滤过度依赖 `internal`、`is_system_risk` 等其他字段兜底
+- 一旦其他兜底条件不完整，就可能放过高风险设备
 
-`content` 变量在 `_scan_devices` 中被正确读取：
+## 对新架构的要求
 
-```python
-content = disk.get("Content", "")
-```
+在当前新架构里，这类问题不应再以“某个 dict 漏字段”的形式出现，而应拆到明确层次中：
 
-但在最终 `devices.append(...)` 时，该字段**没有被放入字典**：
+### `core/domain`
+- `Device` 或相关快照模型应显式包含设备内容类型、文件系统、挂载和风险标记等字段
+- 风险判定依赖的字段应成为稳定模型字段，而不是临时字典键
 
-```python
-# 原有代码（有 Bug）
-devices.append({
-    "id": device_id,
-    "device": device_path,
-    "size_bytes": size_bytes,
-    "internal": internal,
-    "removable": removable,
-    "mounted": mounted,
-    "volumes": volumes,
-    "is_system_risk": is_system_risk
-    # ← "content" 字段缺失！
-})
-```
+### `core/platform/mac`
+- `device_probe.py` 负责从 `diskutil` / plist 输出中提取 `content`、文件系统、挂载状态等原始信息
+- 解析阶段应保证风险判定所需字段不被静默丢失
 
-因此，当 `_validate_target` 调用 `device.get("content", "")` 时，始终返回默认值空字符串 `""`，永远不会命中 `forbidden_content` 集合，过滤形同虚设。
+### `core/planner`
+- `validation.py` 应基于结构化设备模型做目标设备风险拦截
+- 不应把“是否允许写入”建立在单一布尔值上，而应保留可解释的风险原因
 
----
+## 推荐防回归方式
 
-## 影响范围
+- 为 `device_probe.py` 增加解析测试，确保 `content`、文件系统、挂载状态等字段都能进入领域模型
+- 为 `planner` 增加风险校验测试，确认 APFS 容器盘、内置盘、系统盘不会被误判为安全目标
+- 在 API / CLI 输出中保留明确原因，避免只返回“不可用”这类不可解释结果
 
-- `_validate_target` 中的 `forbidden_content` 过滤完全失效
-- `list_available_devices` 返回的设备列表可能包含 APFS 容器盘、HFS+ 盘等不应出现的高风险设备
-- 虽然 `is_system_risk` 和 `internal` 字段提供了一定兜底保护，但 `forbidden_content` 作为独立防线的意义完全丧失
+## 当前结论
 
----
-
-## 修复方案
-
-在 `_scan_devices` 的 `devices.append(...)` 中补充 `"content"` 字段：
-
-```python
-# 修复后代码
-devices.append({
-    "id": device_id,
-    "device": device_path,
-    "size_bytes": size_bytes,
-    "internal": internal,
-    "removable": removable,
-    "mounted": mounted,
-    "volumes": volumes,
-    "is_system_risk": is_system_risk,
-    "content": content,  # ← 补充此字段，使 _validate_target 中的 forbidden_content 过滤生效
-})
-```
-
-`_validate_target` 中的读取逻辑本身无误，无需修改。
-
----
-
-## 修复文件
-
-- `core/mac/device_detection.py`
-  - `_scan_devices`：补充 `"content": content` 字段
-  - `_validate_target`：添加注释说明原 Bug 及修复背景
-
----
-
-## 修复日期
-
-2026-04-01
+这不是当前新架构代码里的已修复文件说明，而是一条**应被新架构吸收的历史风险案例**。

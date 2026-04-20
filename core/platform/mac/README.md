@@ -34,4 +34,13 @@
 
 旧的 `core/mac` 占位目录已经移除。
 
+当前目录已创建这些占位文件：
+- `device_probe.py`
+- `disk_adapter.py`
+- `image_adapter.py`
+- `restore_adapter.py`
+- `mount_adapter.py`
+- `verify_adapter.py`
+- `command_runner.py`
+
 后续 macOS 相关能力直接落在这里，不再通过旧目录过渡。

@@ -6,6 +6,8 @@
 
 ```
 bootoo/
+├── bootoo.py
+├── cli/
 ├── core/
 │   ├── api/
 │   ├── domain/
@@ -19,7 +21,7 @@ bootoo/
 │   ├── planner/
 │   ├── executor/
 │   ├── platform/mac/
-│   └── mac/apple_silicon/
+│   └── mac/apple_silicon/   # 历史占位测试，后续应迁移或清理
 ├── scripts/mac/
 ├── resources/
 └── docs/
@@ -28,7 +30,10 @@ bootoo/
 ## 阅读顺序
 
 先看这些 README：
+- `README.md`
+- `cli/README.md`
 - `core/README.md`
+- `core/api/README.md`
 - `core/domain/README.md`
 - `core/planner/README.md`
 - `core/executor/README.md`
@@ -41,9 +46,11 @@ bootoo/
 1. 新功能优先写入新架构目录
 2. 平台命令实现直接落在 `core/platform/mac`
 3. CLI/API 最终改为依赖 planner/executor
+4. 历史残留路径只做归档或迁移，不再继续扩展
 
 ## 下一阶段建议
 
 1. 先在 `core/domain` 中落第一批类型
 2. 再定义 `planner` 请求和 `ExecutionPlan`
 3. 然后在 `platform/mac` 中补齐只读探测与执行适配能力
+4. 最后把 `api`、`cli`、测试目录和脚本入口统一接到新闭环

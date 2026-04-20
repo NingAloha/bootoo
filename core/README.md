@@ -1,6 +1,7 @@
 # core 架构说明
 
-`core/` 现在只保留新架构骨架：
+`core/` 已建立新架构骨架，并落了第一批占位模块：
+- `core/api`
 - `core/domain`
 - `core/planner`
 - `core/executor`
@@ -56,4 +57,6 @@ core/
 ## 当前状态
 
 - 当前目录用于承载重构后的底层设计
+- `domain`、`planner`、`executor`、`api`、`platform/mac` 已有占位 Python 文件
+- 平台适配器文件名已经稳定，但内部逻辑仍待补齐
 - 旧实现占位层已经移除，避免继续产生并行结构错觉

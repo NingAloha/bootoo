@@ -2,6 +2,11 @@
 
 `api/` 是对 CLI 或未来自动化入口暴露的稳定边界。
 
+当前文件已建立：
+- `contracts.py`
+- `models.py`
+- `bootoo_api.py`
+
 当前阶段这里只保留骨架：
 - 输入模型
 - 输出模型
